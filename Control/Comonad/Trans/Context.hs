@@ -5,7 +5,7 @@
 -- License     :  BSD-style (see the file LICENSE)
 --
 -- Maintainer  :  Edward Kmett <ekmett@gmail.com>
--- Stability   :  experimental
+-- Stability   :  provisional
 -- Portability :  portable
 --
 -- The state-in-context comonad transformer is subject to the laws:
