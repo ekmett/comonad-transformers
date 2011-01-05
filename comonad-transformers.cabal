@@ -1,0 +1,28 @@
+name:          comonad-transformers
+category:      Control, Comonads
+version:       0.1.0
+license:       BSD3
+cabal-version: >= 1.2
+license-file:  LICENSE
+author:        Edward A. Kmett
+maintainer:    Edward A. Kmett <ekmett@gmail.com>
+stability:     provisional
+homepage:      http://comonad.com/reader/
+copyright:     Copyright (C) 2008-2011 Edward A. Kmett
+synopsis:      Comonad transformers
+description:   Comonad transformers
+build-type:    Simple
+
+library
+  build-depends: 
+    base > 4, 
+    comonad >= 0.1.0 && < 0.2,
+    transformers >= 0.2.2.0 && <= 0.3
+
+  exposed-modules:
+    Control.Comonad.Trans.Class
+    Control.Comonad.Trans.Identity
+    Control.Comonad.Trans.Context
+    Control.Comonad.Trans.Discont
+
+  ghc-options:      -Wall 
