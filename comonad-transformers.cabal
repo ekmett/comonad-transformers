@@ -12,6 +12,7 @@ copyright:     Copyright (C) 2008-2011 Edward A. Kmett
 synopsis:      Comonad transformers
 description:   Comonad transformers
 build-type:    Simple
+extra-source-files: coq/Store.v
 
 library
   build-depends: 

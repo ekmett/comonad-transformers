@@ -10,9 +10,9 @@
 --
 -- The store (state-in-context/costate) comonad transformer is subject to the laws:
 -- 
--- x = put (get x) x
--- y = get (put y x)
--- put y x = put y (put z x)
+-- > x = put (get x) x
+-- > y = get (put y x)
+-- > put y x = put y (put z x)
 --
 -- Thanks go to Russell O'Connor and Daniel Peebles for their help formulating 
 -- and proving the laws for this comonad transformer.
