@@ -22,10 +22,10 @@ library
 
   exposed-modules:
     Control.Comonad.Trans.Class
-    Control.Comonad.Trans.Cowriter
     Control.Comonad.Trans.Discont
     Control.Comonad.Trans.Env
     Control.Comonad.Trans.Identity
     Control.Comonad.Trans.Store
+    Control.Comonad.Trans.Traced
 
   ghc-options:      -Wall 
