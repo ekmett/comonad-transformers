@@ -44,7 +44,6 @@ instance Functor w => Functor (ContextT s w) where
 instance Comonad w => Comonad (ContextT s w) where
   extract (ContextT f s) = extract f s
   duplicate (ContextT f s) = ContextT (fmap (\_ -> ContextT f) f) s
-  --    dup (contextT f s) = contextT (map (λ x → contextT f) f) s
 
 instance ComonadTrans (ContextT s) where
   lower (ContextT f s) = fmap ($s) f
