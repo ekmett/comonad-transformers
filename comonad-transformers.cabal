@@ -16,13 +16,16 @@ build-type:    Simple
 library
   build-depends: 
     base > 4, 
+    array >= 0.3.0.1 && < 0.4,
     comonad >= 0.1.0 && < 0.2,
     transformers >= 0.2.2.0 && <= 0.3
 
   exposed-modules:
     Control.Comonad.Trans.Class
-    Control.Comonad.Trans.Identity
-    Control.Comonad.Trans.Context
+    Control.Comonad.Trans.Cowriter
     Control.Comonad.Trans.Discont
+    Control.Comonad.Trans.Env
+    Control.Comonad.Trans.Identity
+    Control.Comonad.Trans.Store
 
   ghc-options:      -Wall 
