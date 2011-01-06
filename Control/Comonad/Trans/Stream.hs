@@ -67,4 +67,4 @@ unfolds :: Functor f => (a -> (b, f a)) -> a -> Stream f b
 unfolds f a = let (h, t) = f a in stream h (unfolds f <$> t)
 
 unfoldsW :: (Comonad w, Functor f) => (w a -> (b, f a)) -> w a -> StreamT f w b
-unfoldsW f = StreamT . extend (\s -> let (h, t) = f s in (h, fmap (\a -> unfoldsW f (a .<< s)) t))
+unfoldsW f = StreamT . extend (\s -> let (h, t) = f s in (h, fmap (\a -> unfoldsW f (a <$ s)) t))
