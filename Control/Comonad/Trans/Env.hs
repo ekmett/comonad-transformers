@@ -43,7 +43,7 @@ instance Functor w => Functor (EnvT e w) where
 
 instance Comonad w => Comonad (EnvT e w) where
   extract (EnvT _ wa) = extract wa
-  duplicate p@(EnvT e wa) = EnvT e (wa .>> p)
+  duplicate p@(EnvT e wa) = EnvT e (p .<< wa)
 
 instance ComonadTrans (EnvT e) where
   lower (EnvT _ wa) = wa

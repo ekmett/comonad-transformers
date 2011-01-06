@@ -1,3 +1,4 @@
+{-# LANGUAGE RankNTypes #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.Comonad.Trans.Discont
@@ -52,4 +53,4 @@ instance ComonadTrans (DiscontT s) where
   lower (DiscontT f s) = extend f s
 
 callCV :: DiscontT s w (DiscontT s w (DiscontT s w a -> a) -> b) -> b
-callCV (DiscontT k s) = k s (DiscontT (\t (DiscontT f _) -> f t) s)
+callCV (DiscontT k s) = k s (DiscontT (\s' (DiscontT k' _) -> k' s') s)

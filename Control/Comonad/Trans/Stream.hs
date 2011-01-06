@@ -44,19 +44,18 @@ runStream = runIdentity . runStreamT
 data StreamT f w a = StreamT { runStreamT :: w (a, f (StreamT f w a)) }
 
 instance (Functor w, Functor f) => Functor (StreamT f w) where
-  fmap f = StreamT . fmap (\(a, as) -> (f a, fmap (fmap f) as)) . runStreamT
+  fmap f = StreamT . fmap (\(a, as) -> (f a, fmap f <$> as)) . runStreamT
 
 instance (Comonad w, Functor f) => Comonad (StreamT f w) where
   extract = fst . extract . runStreamT
-  duplicate = StreamT . extend f . runStreamT where
-    f w = (StreamT w, duplicate <$> snd (extract w))
-  -- extend f = extend (\w -> f (StreamT (StreamT w) (duplicate <$> snd (extract w)))) . runStreamT
+  duplicate = StreamT . extend (\w -> (StreamT w, duplicate <$> snd (extract w))) . runStreamT
+  extend f = StreamT . extend (\w -> (f (StreamT w), extend f <$> snd (extract w))) . runStreamT
 
 instance Functor f => ComonadTrans (StreamT f) where
   lower = fmap fst . runStreamT
 
 instance (Foldable w, Foldable f) => Foldable (StreamT f w) where
-  foldMap f = foldMap (\(a,as) -> f a `mappend` foldMap (foldMap f) as) . runStreamT
+  foldMap f = foldMap (\(a, as) -> f a `mappend` foldMap (foldMap f) as) . runStreamT
 
 instance (Traversable w, Traversable f) => Traversable (StreamT f w) where
   traverse f (StreamT w) = StreamT <$> traverse (\(a, as) -> (,) <$> f a <*> traverse (traverse f) as) w
@@ -67,5 +66,5 @@ tails = snd . extract . runStreamT
 unfolds :: Functor f => (a -> (b, f a)) -> a -> Stream f b
 unfolds f a = let (h, t) = f a in stream h (unfolds f <$> t)
 
-unfoldsW :: (Comonad w, Functor f) => (a -> w (b, f a)) -> a -> StreamT f w b
-unfoldsW f = StreamT . extend (\p -> let (h, t) = extract p in (h, unfoldsW f <$> t)) . f
+unfoldsW :: (Comonad w, Functor f) => (w a -> (b, f a)) -> w a -> StreamT f w b
+unfoldsW f = StreamT . extend (\s -> let (h, t) = f s in (h, fmap (\a -> unfoldsW f (a .<< s)) t))
