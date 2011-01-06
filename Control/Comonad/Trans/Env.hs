@@ -9,48 +9,12 @@
 -- Portability :  portable
 --
 -- The environment comonad transformer (aka coreader).
--- This adds an extra value that can be accessed in the environment.
+-- This version is lazy; for a strict version, see
+-- "Control.Comonad.Trans.Env.Strict", which has the same interface.
 --
--- Left adjoint to the reader comonad.
 ----------------------------------------------------------------------------
 module Control.Comonad.Trans.Env
-  ( Env
-  , env
-  , runEnv
-  , EnvT(..)
-  , runEnvT
-  , ask
+  ( module Control.Comonad.Trans.Env.Lazy
   ) where
 
-import Control.Comonad
-import Control.Comonad.Trans.Class
-import Control.Comonad.Hoist.Class
-import Data.Functor.Identity
-
-type Env e = EnvT e Identity
-data EnvT e w a = EnvT e (w a)
-
-env :: e -> a -> Env e a
-env e a = EnvT e (Identity a)
-
-runEnv :: Env e a -> (e, a)
-runEnv (EnvT e (Identity a)) = (e, a)
-
-runEnvT :: EnvT e w a -> (e, w a)
-runEnvT (EnvT e wa) = (e, wa)
-
-instance Functor w => Functor (EnvT e w) where
-  fmap g (EnvT e wa) = EnvT e (fmap g wa)
-
-instance Comonad w => Comonad (EnvT e w) where
-  extract (EnvT _ wa) = extract wa
-  duplicate p@(EnvT e wa) = EnvT e (p <$ wa)
-
-instance ComonadTrans (EnvT e) where
-  lower (EnvT _ wa) = wa
-
-instance ComonadHoist (EnvT e) where
-  cohoist (EnvT e wa) = EnvT e (Identity (extract wa))
-
-ask :: EnvT e w a -> e
-ask (EnvT e _) = e
+import Control.Comonad.Trans.Env.Lazy
