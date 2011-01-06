@@ -14,7 +14,7 @@ import Control.Comonad
 import Control.Monad.Trans.Identity
 
 class ComonadTrans t where
-  lower :: Comonad w => t w a -> w a 
+  lower   :: Comonad w => t w a -> w a 
 
 -- avoiding orphans
 instance ComonadTrans IdentityT where

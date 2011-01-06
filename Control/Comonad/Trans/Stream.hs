@@ -27,6 +27,7 @@ module Control.Comonad.Trans.Stream
 
 import Control.Applicative
 import Control.Comonad
+import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
 import Data.Functor.Identity
 import Data.Foldable
@@ -41,6 +42,9 @@ stream a as = StreamT (Identity (a, as))
 runStream :: Stream f a -> (a, f (Stream f a))
 runStream = runIdentity . runStreamT
 
+unfolds :: Functor f => (a -> (b, f a)) -> a -> Stream f b
+unfolds f a = let (h, t) = f a in stream h (unfolds f <$> t)
+
 data StreamT f w a = StreamT { runStreamT :: w (a, f (StreamT f w a)) }
 
 instance (Functor w, Functor f) => Functor (StreamT f w) where
@@ -54,6 +58,10 @@ instance (Comonad w, Functor f) => Comonad (StreamT f w) where
 instance Functor f => ComonadTrans (StreamT f) where
   lower = fmap fst . runStreamT
 
+instance Functor f => ComonadHoist (StreamT f) where
+  cohoist (StreamT wa) = stream a (cohoist <$> as) where
+    (a,as) = extract wa 
+
 instance (Foldable w, Foldable f) => Foldable (StreamT f w) where
   foldMap f = foldMap (\(a, as) -> f a `mappend` foldMap (foldMap f) as) . runStreamT
 
@@ -62,9 +70,6 @@ instance (Traversable w, Traversable f) => Traversable (StreamT f w) where
 
 tails :: Comonad w => StreamT f w a -> f (StreamT f w a)
 tails = snd . extract . runStreamT
-
-unfolds :: Functor f => (a -> (b, f a)) -> a -> Stream f b
-unfolds f a = let (h, t) = f a in stream h (unfolds f <$> t)
 
 unfoldsW :: (Comonad w, Functor f) => (w a -> (b, f a)) -> w a -> StreamT f w b
 unfoldsW f = StreamT . extend (\s -> let (h, t) = f s in (h, fmap (\a -> unfoldsW f (a <$ s)) t))

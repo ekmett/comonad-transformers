@@ -31,6 +31,7 @@ module Control.Comonad.Trans.Store
   ) where
 
 import Control.Comonad
+import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
 import Data.Functor.Identity
 
@@ -57,6 +58,9 @@ instance Comonad w => Comonad (StoreT s w) where
 
 instance ComonadTrans (StoreT s) where
   lower (StoreT f s) = fmap ($s) f
+
+instance ComonadHoist (StoreT s) where
+  cohoist (StoreT f s) = StoreT (Identity (extract f)) s
 
 get :: StoreT s w a -> s
 get (StoreT _ s) = s

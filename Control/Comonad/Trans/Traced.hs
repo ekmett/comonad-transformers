@@ -21,9 +21,13 @@ module Control.Comonad.Trans.Traced
   , TracedT(..)
   -- * Operations
   , trace
+  , listen
+  , listens
+  , censor
   ) where
 
 import Control.Comonad
+import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
 import Data.Functor.Identity
 import Data.Monoid
@@ -48,5 +52,17 @@ instance (Comonad w, Monoid m) => Comonad (TracedT m w) where
 instance Monoid m => ComonadTrans (TracedT m) where
   lower = fmap ($mempty) . runTracedT
 
+instance Monoid m => ComonadHoist (TracedT m) where
+  cohoist = traced . extract . runTracedT
+
 trace :: (Comonad w, Monoid m) => m -> TracedT m w a -> a
 trace m (TracedT wf) = extract wf m
+
+listen :: Functor w => TracedT m w a -> TracedT m w (a, m)
+listen = TracedT . fmap (\f m -> (f m, m)) . runTracedT
+
+listens :: Functor w => (m -> b) -> TracedT m w a -> TracedT m w (a, b)
+listens g = TracedT . fmap (\f m -> (f m, g m)) . runTracedT 
+
+censor :: Functor w => (m -> m) -> TracedT m w a -> TracedT m w a
+censor g = TracedT . fmap (. g) . runTracedT

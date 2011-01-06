@@ -24,6 +24,7 @@ module Control.Comonad.Trans.Env
 
 import Control.Comonad
 import Control.Comonad.Trans.Class
+import Control.Comonad.Hoist.Class
 import Data.Functor.Identity
 
 type Env e = EnvT e Identity
@@ -47,6 +48,9 @@ instance Comonad w => Comonad (EnvT e w) where
 
 instance ComonadTrans (EnvT e) where
   lower (EnvT _ wa) = wa
+
+instance ComonadHoist (EnvT e) where
+  cohoist (EnvT e wa) = EnvT e (Identity (extract wa))
 
 ask :: EnvT e w a -> e
 ask (EnvT e _) = e
