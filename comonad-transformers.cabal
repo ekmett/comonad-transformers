@@ -28,5 +28,6 @@ library
     Control.Comonad.Trans.Identity
     Control.Comonad.Trans.Store
     Control.Comonad.Trans.Traced
+    Control.Comonad.Trans.Stream
 
   ghc-options:      -Wall 
