@@ -16,10 +16,11 @@ import Data.Functor.Identity
 
 class ComonadHoist t where
   -- | Ideally we would offer a way to lift comonad homomorphisms
-  -- but this isn't Haskell 98, so we settle for the most common case.
+  -- but this isn't Haskell 98, so we settle for the most common case
+  -- here.
   --
-  -- liftTrans :: (forall a. w a -> v a) -> t w a -> t v a 
-  -- cohoist = liftTrans (Identity . extract)
+  -- > liftTrans :: (forall a. w a -> v a) -> t w a -> t v a 
+  -- > cohoist = liftTrans (Identity . extract)
   cohoist :: Comonad w => t w a -> t Identity a
 
 -- avoiding orphans

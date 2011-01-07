@@ -32,6 +32,7 @@ import Control.Comonad
 import Control.Comonad.Trans.Class
 import Control.Comonad.Hoist.Class
 import Data.Functor.Identity
+import Data.Monoid
 
 type Env e = EnvT e Identity
 data EnvT e w a = EnvT e (w a)
@@ -51,6 +52,11 @@ instance Functor w => Functor (EnvT e w) where
 instance Comonad w => Comonad (EnvT e w) where
   extract ~(EnvT _ wa) = extract wa
   duplicate p@(~(EnvT e wa)) = EnvT e (p <$ wa)
+
+instance (Monoid e, FunctorApply w) => FunctorApply (EnvT e w) where
+  ~(EnvT ef wf) <.> ~(EnvT ea wa) = EnvT (ef `mappend` ea) (wf <.> wa)
+
+instance (Monoid e, ComonadApply w) => ComonadApply (EnvT e w)
 
 instance ComonadTrans (EnvT e) where
   lower ~(EnvT _ wa) = wa
