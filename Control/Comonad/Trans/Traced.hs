@@ -29,6 +29,7 @@ module Control.Comonad.Trans.Traced
 import Control.Comonad
 import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
+import Data.Functor
 import Data.Functor.Identity
 import Data.Monoid
 
@@ -54,6 +55,11 @@ instance Monoid m => ComonadTrans (TracedT m) where
 
 instance Monoid m => ComonadHoist (TracedT m) where
   cohoist = traced . extract . runTracedT
+
+instance (Monoid m, FunctorApply w) => FunctorApply (TracedT m w) where
+  TracedT wf <.> TracedT wa = TracedT ((\mf ma m -> (mf m) (ma m)) <$> wf <.> wa)
+
+instance (Monoid m, ComonadApply w) => ComonadApply (TracedT m w)
 
 trace :: (Comonad w, Monoid m) => m -> TracedT m w a -> a
 trace m (TracedT wf) = extract wf m
