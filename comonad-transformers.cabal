@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       0.4.1
+version:       0.5.0
 license:       BSD3
 cabal-version: >= 1.2
 license-file:  LICENSE
@@ -18,7 +18,7 @@ library
   build-depends: 
     base >= 4 && < 4.4,
     array >= 0.3.0.1 && < 0.4,
-    comonad >= 0.4 && < 0.5,
+    comonad >= 0.5 && < 0.6,
     transformers >= 0.2.0 && <= 0.3
 
   exposed-modules:
