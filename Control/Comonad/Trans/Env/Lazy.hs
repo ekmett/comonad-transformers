@@ -20,7 +20,7 @@ module Control.Comonad.Trans.Env.Lazy
   , env
   , runEnv
   -- * The environment comonad transformer
-  , EnvT
+  , EnvT(..)
   , runEnvT
   -- * Combinators
   , ask
