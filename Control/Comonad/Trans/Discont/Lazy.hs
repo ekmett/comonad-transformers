@@ -27,6 +27,7 @@ module Control.Comonad.Trans.Discont.Lazy
   , runDiscontT
   -- * Combinators
   , callCV
+  , label
   ) where
 
 import Data.Functor.Identity
@@ -46,15 +47,18 @@ runDiscont ~(DiscontT f (Identity s)) = (f . Identity,  s)
 runDiscontT :: DiscontT s w a -> (w s -> a, w s)
 runDiscontT ~(DiscontT f s) = (f, s)
 
-instance Functor w => Functor (DiscontT s w) where
+instance Functor (DiscontT s w) where
   fmap g ~(DiscontT f ws) = DiscontT (g . f) ws
 
-instance Comonad w => Comonad (DiscontT s w) where
+instance Comonad (DiscontT s w) where
   extract ~(DiscontT f ws) = f ws
   duplicate ~(DiscontT f ws) = DiscontT (DiscontT f) ws
 
 instance ComonadTrans (DiscontT s) where
   lower ~(DiscontT f s) = extend f s
+
+label :: Comonad w => DiscontT s w a -> s 
+label ~(DiscontT _ ws) = extract ws
 
 callCV :: DiscontT s w (DiscontT s w (DiscontT s w a -> a) -> b) -> b
 callCV ~(DiscontT k s) = k s (DiscontT (\s' ~(DiscontT k' _) -> k' s') s)

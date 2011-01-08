@@ -27,9 +27,11 @@ module Control.Comonad.Trans.Traced
   ) where
 
 import Control.Comonad
+import Control.Comonad.Apply
 import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
 import Data.Functor
+import Data.Functor.Apply
 import Data.Functor.Identity
 import Data.Monoid
 

@@ -29,8 +29,10 @@ module Control.Comonad.Trans.Env.Strict
   ) where
 
 import Control.Comonad
+import Control.Comonad.Apply
 import Control.Comonad.Trans.Class
 import Control.Comonad.Hoist.Class
+import Data.Functor.Apply
 import Data.Functor.Identity
 import Data.Monoid
 

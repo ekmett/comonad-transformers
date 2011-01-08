@@ -31,6 +31,8 @@ module Control.Comonad.Trans.Env.Lazy
 import Control.Comonad
 import Control.Comonad.Trans.Class
 import Control.Comonad.Hoist.Class
+import Control.Comonad.Apply
+import Data.Functor.Apply
 import Data.Functor.Identity
 import Data.Monoid
 

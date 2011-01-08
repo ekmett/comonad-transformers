@@ -30,12 +30,14 @@ module Control.Comonad.Trans.Stream
 
 import Control.Applicative
 import Control.Comonad
+import Control.Comonad.Apply
 import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
+import Data.Functor.Apply
 import Data.Functor.Identity
 import Data.Foldable
-import Data.Monoid
 import Data.Traversable
+import Data.Monoid
 
 -- | Isomorphic to the definition:
 --
