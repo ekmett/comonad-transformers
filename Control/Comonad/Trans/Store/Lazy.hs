@@ -35,6 +35,21 @@ import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
 import Data.Functor.Identity
 
+#ifdef GHC_TYPEABLE
+import Data.Typeable
+instance (Typeable s, Typeable1 w) => Typeable1 (StoreT s w) where
+  typeOf1 dswa = mkTyConApp storeTTyCon [typeOf (s dswa), typeOf1 (w dswa)]
+    where
+      s :: StoreT s w a -> s
+      s = undefined
+      w :: StoreT s w a -> w a
+      w = undefined
+
+storeTTyCon :: TyCon
+storeTTyCon = mkTyCon "Control.Comonad.Trans.Store.Lazy.StoreT"
+{-# NOINLINE storeTTyCon #-}
+#endif
+
 type Store s = StoreT s Identity
 
 store :: (s -> a) -> s -> Store s a 

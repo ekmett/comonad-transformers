@@ -36,6 +36,49 @@ import Data.Functor.Apply
 import Data.Functor.Identity
 import Data.Monoid
 
+#ifdef GHC_TYPEABLE
+import Data.Data
+
+instance (Typeable s, Typeable1 w) => Typeable1 (EnvT s w) where
+  typeOf1 dswa = mkTyConApp envTTyCon [typeOf (s dswa), typeOf1 (w dswa)]
+    where
+      s :: EnvT s w a -> s
+      s = undefined
+      w :: EnvT s w a -> w a
+      w = undefined
+
+envTTyCon :: TyCon
+envTTyCon = mkTyCon "Control.Comonad.Trans.Env.Lazy.EnvT"
+{-# NOINLINE envTTyCon #-}
+
+instance (Typeable s, Typeable1 w, Typeable a) => Typeable (EnvT s w a) where
+  typeOf = typeOfDefault
+
+instance
+  ( Typeable e
+  , Typeable1 w
+  , Data e
+  , Data (w a)
+  , Data a
+  ) => Data (EnvT e w a) where
+    gfoldl f z (EnvT e wa) = z EnvT `f` e `f` wa
+    toConstr _ = envTConstr
+    gunfold k z c = case constrIndex c of
+        1 -> k (k (z EnvT))
+        _ -> error "gunfold"
+    dataTypeOf _ = envTDataType
+    dataCast1 f = gcast1 f
+
+envTConstr :: Constr
+envTConstr = mkConstr envTDataType "EnvT" [] Prefix
+{-# NOINLINE envTConstr #-}
+
+envTDataType :: DataType
+envTDataType = mkDataType "Control.Comonad.Trans.Env.Lazy.EnvT" [envTConstr]
+{-# NOINLINE envTDataType #-}
+
+#endif
+
 type Env e = EnvT e Identity
 data EnvT e w a = EnvT e (w a)
 
@@ -74,3 +117,4 @@ asks f = f . ask
 
 local :: (e -> e) -> EnvT e w a -> EnvT e w a
 local f ~(EnvT e wa) = EnvT (f e) wa
+

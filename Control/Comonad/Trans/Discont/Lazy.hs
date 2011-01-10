@@ -34,6 +34,24 @@ import Data.Functor.Identity
 import Control.Comonad
 import Control.Comonad.Trans.Class
 
+#ifdef GHC_TYPEABLE
+import Data.Typeable
+
+instance (Typeable s, Typeable1 w) => Typeable1 (DiscontT s w) where
+  typeOf1 dswa = mkTyConApp discontTTyCon [typeOf (s dswa), typeOf1 (w dswa)]
+    where 
+      s :: DiscontT s w a -> s
+      s = undefined
+      w :: DiscontT s w a -> w a
+      w = undefined
+
+discontTTyCon :: TyCon
+discontTTyCon = mkTyCon "Control.Comonad.Trans.Discont.Lazy.DiscontT" 
+{-# NOINLINE discontTTyCon #-}
+
+#endif
+
+
 type Discont s = DiscontT s Identity
 
 data DiscontT s w a = DiscontT (w s -> a) (w s)

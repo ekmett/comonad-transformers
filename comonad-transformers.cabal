@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       0.6.1
+version:       0.6.2
 license:       BSD3
 cabal-version: >= 1.2
 license-file:  LICENSE
@@ -21,6 +21,11 @@ library
     comonad >= 0.6 && < 0.7,
     functor-apply >= 0.6 && < 0.8,
     transformers >= 0.2.0 && <= 0.3
+
+  extensions: CPP
+  if impl(ghc)
+    cpp-options: -DGHC_TYPEABLE
+    extensions: FlexibleContexts
 
   exposed-modules:
     Control.Comonad.Hoist.Class

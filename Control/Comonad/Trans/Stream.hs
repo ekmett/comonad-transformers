@@ -1,4 +1,4 @@
--- {-# LANGUAGE FlexibleContexts, UndecidableInstances #-}
+{-# LANGUAGE FlexibleContexts, UndecidableInstances #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.Comonad.Trans.Stream
@@ -38,6 +38,10 @@ import Data.Functor.Identity
 import Data.Foldable
 import Data.Traversable
 import Data.Monoid
+
+#ifdef GHC_TYPEABLE
+import Data.Data
+#endif
 
 -- | Isomorphic to the definition:
 --
@@ -103,3 +107,47 @@ tails = snd . extract . runStreamT
 
 unfoldsW :: (Comonad w, Functor f) => (w a -> (b, f a)) -> w a -> StreamT f w b
 unfoldsW f = StreamT . extend (\s -> let (h, t) = f s in (h, fmap (\a -> unfoldsW f (a <$ s)) t))
+
+#ifdef GHC_TYPEABLE
+
+instance (Typeable1 f, Typeable1 w) => Typeable1 (StreamT f w) where
+  typeOf1 dfwa = mkTyConApp streamTTyCon [typeOf1 (f dfwa), typeOf1 (w dfwa)]
+    where
+      f :: StreamT f w a -> f a 
+      f = undefined
+      w :: StreamT f w a -> w a
+      w = undefined
+
+instance (Typeable1 f, Typeable1 w, Typeable a) => Typeable (StreamT f w a) where
+  typeOf = typeOfDefault
+
+streamTTyCon :: TyCon
+streamTTyCon = mkTyCon "Control.Comonad.Trans.Stream.StreamT"
+{-# NOINLINE streamTTyCon #-}
+
+-- if any structure ever cried out for generic programming, this is it
+instance 
+  ( Typeable1 f
+  , Typeable1 w
+  , Data (w (a, f (StreamT f w a)))
+  , Data (a, f (StreamT f w a))
+  , Data (f (StreamT f w a))
+  , Data a
+  ) => Data (StreamT f w a) where
+    gfoldl f z (StreamT a) = z StreamT `f` a
+    toConstr _ = streamTConstr
+    gunfold k z c = case constrIndex c of
+        1 -> k (z StreamT)
+        _ -> error "gunfold"
+    dataTypeOf _ = streamTDataType
+    dataCast1 f = gcast1 f
+
+streamTConstr :: Constr
+streamTConstr = mkConstr streamTDataType "StreamT" [] Prefix
+{-# NOINLINE streamTConstr #-}
+
+streamTDataType :: DataType
+streamTDataType = mkDataType "Control.Comonad.Trans.Stream.StreamT" [streamTConstr]
+{-# NOINLINE streamTDataType #-}
+
+#endif
