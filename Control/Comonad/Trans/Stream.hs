@@ -26,6 +26,8 @@ module Control.Comonad.Trans.Stream
   -- * Operations
   , tails
   , unfoldsW
+  -- * StreamT nodes
+  , Node(..)
   ) where
 
 import Control.Applicative
@@ -39,8 +41,10 @@ import Data.Foldable
 import Data.Traversable
 import Data.Monoid
 
-#ifdef GHC_TYPEABLE
-import Data.Data
+import Text.Show.Extras
+
+#ifdef __GLASGOW_HASKELL__
+import Data.Data.Extras
 #endif
 
 -- | Isomorphic to the definition:
@@ -50,47 +54,68 @@ type Stream f = StreamT f Identity
 
 -- | cons onto an f-branching stream
 stream :: a -> f (Stream f a) -> Stream f a 
-stream a as = StreamT (Identity (a, as))
+stream a as = StreamT (Identity (a :< as))
 
 -- | uncons from an f-branching stream
 runStream :: Stream f a -> (a, f (Stream f a))
-runStream = runIdentity . runStreamT
+runStream (StreamT (Identity (a :< as))) = (a, as)
 
 -- | unfold a stream from a seed.
 unfolds :: Functor f => (a -> (b, f a)) -> a -> Stream f b
 unfolds f a = let (h, t) = f a in stream h (unfolds f <$> t)
 
+data Node f w a = a :< f (StreamT f w a)
+
+instance (Show1 f, Show1 w) => Show1 (Node f w) where
+  showsPrec1 d (a :< as) = showParen (d > 5) $
+    showsPrec a 6 . showString " :< " . showsPrec as 5
+
+instance (Show1 f, Show1 w, Show a) => Show (Node f w)
+  showsPrec = showsPrec1
+
+infixr 5 :<
+
+fstN :: Node f w a -> a
+fstN (a :< _) = a
+
+sndN :: Node f w a -> f (StreamT f w a)
+sndN (_ :< as) = as
+
+instance (Functor w, Functor f)  => Functor (Node f w) where
+  fmap f (a :< as) = f a :< fmap (fmap f) as
+
+  
 -- | The f-branching stream comonad transformer is a comonadic version of
 -- the \"ListT done Right\" monad transformer. You can extract the underlying comonadic 
 -- value by using 'lower' or runStream
-data StreamT f w a = StreamT { runStreamT :: w (a, f (StreamT f w a)) }
+data StreamT f w a = StreamT { runStreamT :: w (Node f w a) }
 
 instance (Functor w, Functor f) => Functor (StreamT f w) where
-  fmap f = StreamT . fmap (\(a, as) -> (f a, fmap f <$> as)) . runStreamT
+  fmap f = StreamT . fmap (fmap f) . runStreamT
 
 instance (Comonad w, Functor f) => Comonad (StreamT f w) where
-  extract = fst . extract . runStreamT
-  duplicate = StreamT . extend (\w -> (StreamT w, duplicate <$> snd (extract w))) . runStreamT
-  extend f = StreamT . extend (\w -> (f (StreamT w), extend f <$> snd (extract w))) . runStreamT
+  extract = fstN . extract . runStreamT
+  duplicate = StreamT . extend (\w -> StreamT w :< (duplicate <$> sndN (extract w))) . runStreamT
+  extend f = StreamT . extend (\w -> f (StreamT w) :< (extend f <$> sndN (extract w))) . runStreamT
 
 instance (ComonadApply w, FunctorApply f) => FunctorApply (StreamT f w) where
   StreamT ffs <.> StreamT aas = StreamT (liftW2 wfa ffs aas) where
-    wfa (f,fs) (a,as) = (f a, (<.>) <$> fs <.> as)
+    wfa (f :< fs) (a :< as) = f a :< ((<.>) <$> fs <.> as)
 
 instance (ComonadApply w, FunctorApply f) => ComonadApply (StreamT f w)
 
 instance Functor f => ComonadTrans (StreamT f) where
-  lower = fmap fst . runStreamT
+  lower = fmap fstN . runStreamT
 
 instance Functor f => ComonadHoist (StreamT f) where
   cohoist (StreamT wa) = stream a (cohoist <$> as) where
-    (a,as) = extract wa 
+    a :< as = extract wa 
 
 instance (Foldable w, Foldable f) => Foldable (StreamT f w) where
-  foldMap f = foldMap (\(a, as) -> f a `mappend` foldMap (foldMap f) as) . runStreamT
+  foldMap f = foldMap (\(a :< as) -> f a `mappend` foldMap (foldMap f) as) . runStreamT
 
 instance (Traversable w, Traversable f) => Traversable (StreamT f w) where
-  traverse f (StreamT w) = StreamT <$> traverse (\(a, as) -> (,) <$> f a <*> traverse (traverse f) as) w
+  traverse f (StreamT w) = StreamT <$> traverse (\(a :< as) -> (:<) <$> f a <*> traverse (traverse f) as) w
 
 {-
 instance Show a => Show (Identity a) where
@@ -103,28 +128,70 @@ instance (Show (w (a, f (StreamT f w a)))) => Show (StreamT f w a) where
 -}
 
 tails :: Comonad w => StreamT f w a -> f (StreamT f w a)
-tails = snd . extract . runStreamT
+tails = sndN . extract . runStreamT
 
 unfoldsW :: (Comonad w, Functor f) => (w a -> (b, f a)) -> w a -> StreamT f w b
-unfoldsW f = StreamT . extend (\s -> let (h, t) = f s in (h, fmap (\a -> unfoldsW f (a <$ s)) t))
+unfoldsW f = StreamT . extend (\s -> let (h, t) = f s in h :< fmap (\a -> unfoldsW f (a <$ s)) t)
 
-#ifdef GHC_TYPEABLE
+#ifdef __GLASGOW_HASKELL__
+
+typeF :: t f w a -> w a -> f a 
+typeF = undefined
+typeW :: t f w a -> f a -> w a
+typeW = undefined
+
+instance (Typeable1 f, Typeable1 w) => Typeable1 (Node f w) where
+  typeOf1 d = mkTyConApp nodeTyCon [typeOf1 (typeF d undefined), typeOf1 (typeW d undefined)]
+
+instance (Typeable1 f, Typeable1 w, Typeable a) => Typeable (Node f w a) where
+  typeOf = typeOfDefault
 
 instance (Typeable1 f, Typeable1 w) => Typeable1 (StreamT f w) where
-  typeOf1 dfwa = mkTyConApp streamTTyCon [typeOf1 (f dfwa), typeOf1 (w dfwa)]
-    where
-      f :: StreamT f w a -> f a 
-      f = undefined
-      w :: StreamT f w a -> w a
-      w = undefined
+  typeOf1 d = mkTyConApp streamTTyCon [typeOf1 (typeF d undefined), typeOf1 (typeW d undefined)]
 
 instance (Typeable1 f, Typeable1 w, Typeable a) => Typeable (StreamT f w a) where
   typeOf = typeOfDefault
+
+nodeTyCon :: TyCon
+nodeTyCon = mkTyCon "Control.Comonad.Trans.Stream.Node"
+{-# NOINLINE nodeTyCon #-}
 
 streamTTyCon :: TyCon
 streamTTyCon = mkTyCon "Control.Comonad.Trans.Stream.StreamT"
 {-# NOINLINE streamTTyCon #-}
 
+instance (Data1 f, Data1 w) => Data1 (Node f w) where
+  gfoldl1 k z (a :< as) = liftK k (z (:<) `k` a) as
+  toConstr1 _ = nodeConstr
+  gunfold1 f z c = case constrIndex c of
+    1 -> liftF f (f (z (:<)))
+    _ -> error "gunfold"
+  dataTypeOf1 _ = nodeDataType
+  dataCast1_1 f = gcast1 f
+
+instance (Data1 f, Data1 w, Data a) => Data (Node f w a) where
+  gfoldl = gfoldl1
+  toConstr = toConstr1
+  gunfold = gunfold1
+  dataTypeOf = dataTypeOf1
+  dataCast1 = dataCast1_1
+
+instance (Data1 f, Data1 w) => Data1 (StreamT f w) where
+  gfoldl1 k z (StreamT a) = liftK k (z StreamT) (undefined a)
+  toConstr1 _ = streamTConstr
+  gunfold1 k z c = case constrIndex c of
+    1 -> liftF k (z StreamT)
+    _ -> error "gunfold"
+  dataTypeOf1 _ = streamTDataType
+  dataCast1_1 f = gcast1 f
+
+instance (Data1 f, Data1 w, Data a) => Data (StreamT f w a) where
+  gfoldl = gfoldl1
+  toConstr = toConstr1
+  gunfold = gunfold1
+  dataTypeOf = dataTypeOf1
+  dataCast1 = dataCast1_1
+{-
 -- if any structure ever cried out for generic programming, this is it
 instance 
   ( Typeable1 f
@@ -141,6 +208,7 @@ instance
         _ -> error "gunfold"
     dataTypeOf _ = streamTDataType
     dataCast1 f = gcast1 f
+-}
 
 streamTConstr :: Constr
 streamTConstr = mkConstr streamTDataType "StreamT" [] Prefix
@@ -149,5 +217,13 @@ streamTConstr = mkConstr streamTDataType "StreamT" [] Prefix
 streamTDataType :: DataType
 streamTDataType = mkDataType "Control.Comonad.Trans.Stream.StreamT" [streamTConstr]
 {-# NOINLINE streamTDataType #-}
+
+nodeConstr :: Constr
+nodeConstr = mkConstr streamTDataType ":<" [] Infix
+{-# NOINLINE nodeConstr #-}
+
+nodeDataType :: DataType
+nodeDataType = mkDataType "Control.Comonad.Trans.Stream.Node" [nodeConstr]
+{-# NOINLINE nodeDataType #-}
 
 #endif
