@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP, FlexibleContexts #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.Comonad.Trans.Context
@@ -28,16 +29,19 @@ module Control.Comonad.Trans.Env.Lazy
   , local
   ) where
 
+import Control.Applicative
 import Control.Comonad
 import Control.Comonad.Trans.Class
 import Control.Comonad.Hoist.Class
 import Control.Comonad.Apply
 import Data.Functor.Apply
 import Data.Functor.Identity
+import Data.Foldable
+import Data.Traversable
 import Data.Monoid
 
-#ifdef GHC_TYPEABLE
-import Data.Data
+#ifdef __GLASGOW_HASKELL__
+import Data.Data.Extras
 
 instance (Typeable s, Typeable1 w) => Typeable1 (EnvT s w) where
   typeOf1 dswa = mkTyConApp envTTyCon [typeOf (s dswa), typeOf1 (w dswa)]
@@ -54,11 +58,27 @@ envTTyCon = mkTyCon "Control.Comonad.Trans.Env.Lazy.EnvT"
 instance (Typeable s, Typeable1 w, Typeable a) => Typeable (EnvT s w a) where
   typeOf = typeOfDefault
 
+{-
+instance (Data e, Data1 w) => Data1 (EnvT e w) where
+    gfoldl1 f z (EnvT e wa) = liftK f wa (z EnvT `f` e)
+    toConstr1 _ = envTConstr
+    gunfold1 k z c = case constrIndex c of
+        1 -> liftF k (k (z EnvT))
+        _ -> error "gunfold"
+    dataTypeOf1 _ = envTDataType
+    dataCast1_1 f = gcast1 f
+
+instance (Data e, Data1 w, Data a) => Data (EnvT e w a) where
+    gfoldl = gfoldl1
+    toConstr = toConstr1
+    gunfold = gunfold1
+    dataTypeOf = dataTypeOf1
+    dataCast1 = dataCast1_1
+-}
+
 instance
-  ( Typeable e
-  , Typeable1 w
-  , Data e
-  , Data (w a)
+  ( Data e
+  , Typeable1 w, Data (w a)
   , Data a
   ) => Data (EnvT e w a) where
     gfoldl f z (EnvT e wa) = z EnvT `f` e `f` wa
@@ -108,6 +128,12 @@ instance ComonadTrans (EnvT e) where
 
 instance ComonadHoist (EnvT e) where
   cohoist ~(EnvT e wa) = EnvT e (Identity (extract wa))
+
+instance Foldable w => Foldable (EnvT e w) where
+  foldMap f (EnvT _ w) = foldMap f w
+
+instance Traversable w => Traversable (EnvT e w) where
+  traverse f (EnvT e w) = EnvT e <$> traverse f w
 
 ask :: EnvT e w a -> e
 ask ~(EnvT e _) = e

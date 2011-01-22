@@ -35,9 +35,7 @@ import Data.Functor.Apply
 import Data.Functor.Identity
 import Data.Monoid
 
-#ifdef GHC_TYPEABLE
 import Data.Typeable
-#endif
 
 type Traced m = TracedT m Identity
 
@@ -79,7 +77,7 @@ listens g = TracedT . fmap (\f m -> (f m, g m)) . runTracedT
 censor :: Functor w => (m -> m) -> TracedT m w a -> TracedT m w a
 censor g = TracedT . fmap (. g) . runTracedT
 
-#ifdef GHC_TYPEABLE
+#ifdef __GLASGOW_HASKELL__
 
 instance (Typeable s, Typeable1 w) => Typeable1 (TracedT s w) where
   typeOf1 dswa = mkTyConApp tracedTTyCon [typeOf (s dswa), typeOf1 (w dswa)]

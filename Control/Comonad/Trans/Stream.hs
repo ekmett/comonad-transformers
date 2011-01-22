@@ -68,10 +68,11 @@ data Node f w a = a :< f (StreamT f w a)
 
 instance (Show1 f, Show1 w) => Show1 (Node f w) where
   showsPrec1 d (a :< as) = showParen (d > 5) $
-    showsPrec a 6 . showString " :< " . showsPrec as 5
+    showsPrec 6 a . showString " :< " . showsPrec1 5 as
 
-instance (Show1 f, Show1 w, Show a) => Show (Node f w)
+instance (Show1 f, Show1 w, Show a) => Show (Node f w a) where
   showsPrec = showsPrec1
+
 
 infixr 5 :<
 
@@ -89,6 +90,13 @@ instance (Functor w, Functor f)  => Functor (Node f w) where
 -- the \"ListT done Right\" monad transformer. You can extract the underlying comonadic 
 -- value by using 'lower' or runStream
 data StreamT f w a = StreamT { runStreamT :: w (Node f w a) }
+
+instance (Show1 f, Show1 w) => Show1 (StreamT f w) where
+  showsPrec1 d (StreamT wa) = showParen (d > 10) $ 
+    showsPrec1 11 wa
+
+instance (Show1 f, Show1 w, Show a) => Show (StreamT f w a) where
+  showsPrec = showsPrec1
 
 instance (Functor w, Functor f) => Functor (StreamT f w) where
   fmap f = StreamT . fmap (fmap f) . runStreamT

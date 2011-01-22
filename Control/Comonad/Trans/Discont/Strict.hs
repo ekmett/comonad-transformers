@@ -34,7 +34,7 @@ import Data.Functor.Identity
 import Control.Comonad
 import Control.Comonad.Trans.Class
 
-#ifdef GHC_TYPEABLE
+#ifdef __GLASGOW_HASKELL__
 import Data.Typeable
 
 instance (Typeable s, Typeable1 w) => Typeable1 (DiscontT s w) where

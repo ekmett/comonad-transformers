@@ -1,18 +1,22 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       0.6.3
+version:       0.6.5
 license:       BSD3
-cabal-version: >= 1.2
+cabal-version: >= 1.6
 license-file:  LICENSE
 author:        Edward A. Kmett
 maintainer:    Edward A. Kmett <ekmett@gmail.com>
 stability:     provisional
-homepage:      http://comonad.com/reader/
+homepage:      git://github.com/ekmett/comonad-transformers/
 copyright:     Copyright (C) 2008-2011 Edward A. Kmett
 synopsis:      Haskell 98 comonad transformers
 description:   Haskell 98 comonad transformers
 build-type:    Simple
 extra-source-files: coq/Store.v
+
+source-repository head
+  type: git
+  location: git://github.com/ekmett/comonad-transformers.git
 
 library
   build-depends: 
@@ -20,8 +24,13 @@ library
     array >= 0.3.0.1 && < 0.4,
     comonad >= 0.6 && < 0.7,
     functor-apply >= 0.6 && < 0.8,
-    transformers >= 0.2.0 && <= 0.3,
-    syb-extras >= 0.1 && <= 0.3
+    prelude-extras >= 0.1 && < 0.3,
+    syb-extras >= 0.1 && < 0.3,
+    transformers >= 0.2.0 && <= 0.3
+
+  if impl(ghc)
+    build-depends: syb-extras >= 0.1 && <= 0.3
+    extensions: DeriveDataTypeable
 
   extensions: CPP
 
@@ -40,5 +49,6 @@ library
     Control.Comonad.Trans.Store.Strict
     Control.Comonad.Trans.Traced
     Control.Comonad.Trans.Stream
+    Control.Monad.Trans.Cont.Comonadic
 
   ghc-options:      -Wall 
