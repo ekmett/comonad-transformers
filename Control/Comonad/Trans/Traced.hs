@@ -34,6 +34,7 @@ import Data.Functor
 import Data.Functor.Apply
 import Data.Functor.Identity
 import Data.Monoid
+import Data.Semigroup
 
 import Data.Typeable
 
@@ -50,20 +51,22 @@ newtype TracedT m w a = TracedT { runTracedT :: w (m -> a) }
 instance Functor w => Functor (TracedT m w) where
   fmap g = TracedT . fmap (g .) . runTracedT
 
-instance (Comonad w, Monoid m) => Comonad (TracedT m w) where
-  extract (TracedT wf) = extract wf mempty
-  extend f = TracedT . extend (\wf m -> f (TracedT (fmap (. mappend m) wf))) . runTracedT
+instance (Extend w, Semigroup m) => Extend (TracedT m w) where
+  extend f = TracedT . extend (\wf m -> f (TracedT (fmap (. (<>) m) wf))) . runTracedT
 
-instance Monoid m => ComonadTrans (TracedT m) where
+instance (Comonad w, Semigroup m, Monoid m) => Comonad (TracedT m w) where
+  extract (TracedT wf) = extract wf mempty
+
+instance (Semigroup m, Monoid m) => ComonadTrans (TracedT m) where
   lower = fmap ($mempty) . runTracedT
 
-instance Monoid m => ComonadHoist (TracedT m) where
+instance (Semigroup m, Monoid m) => ComonadHoist (TracedT m) where
   cohoist = traced . extract . runTracedT
 
-instance (Monoid m, FunctorApply w) => FunctorApply (TracedT m w) where
+instance (Apply w, Semigroup m, Monoid m) => Apply (TracedT m w) where
   TracedT wf <.> TracedT wa = TracedT ((\mf ma m -> (mf m) (ma m)) <$> wf <.> wa)
 
-instance (Monoid m, ComonadApply w) => ComonadApply (TracedT m w)
+instance (ComonadApply w, Semigroup m, Monoid m) => ComonadApply (TracedT m w)
 
 trace :: (Comonad w, Monoid m) => m -> TracedT m w a -> a
 trace m (TracedT wf) = extract wf m

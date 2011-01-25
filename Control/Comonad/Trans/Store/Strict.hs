@@ -69,10 +69,12 @@ runStoreT (StoreT wf s) = (wf, s)
 instance Functor w => Functor (StoreT s w) where
   fmap f (StoreT wf s) = StoreT (fmap (f .) wf) s
 
-instance Comonad w => Comonad (StoreT s w) where
-  extract (StoreT wf s) = extract wf s
+instance Extend w => Extend (StoreT s w) where
   duplicate (StoreT wf s) = StoreT (extend StoreT wf) s
   extend f (StoreT wf s) = StoreT (extend (\wf' s' -> f (StoreT wf' s')) wf) s
+
+instance Comonad w => Comonad (StoreT s w) where
+  extract (StoreT wf s) = extract wf s
 
 instance ComonadTrans (StoreT s) where
   lower (StoreT f s) = fmap ($s) f

@@ -37,7 +37,7 @@ import Data.Foldable
 import Data.Traversable
 import Data.Functor.Apply
 import Data.Functor.Identity
-import Data.Monoid
+import Data.Semigroup
 
 #ifdef __GLASGOW_HASKELL__
 import Data.Data.Extras
@@ -113,9 +113,11 @@ runEnvT (EnvT e wa) = (e, wa)
 instance Functor w => Functor (EnvT e w) where
   fmap g (EnvT e wa) = EnvT e (fmap g wa)
 
+instance Extend w => Extend (EnvT e w) where
+  duplicate (EnvT e wa) = EnvT e (extend (EnvT e) wa)
+
 instance Comonad w => Comonad (EnvT e w) where
   extract (EnvT _ wa) = extract wa
-  duplicate p@(EnvT e wa) = EnvT e (p <$ wa)
 
 instance ComonadTrans (EnvT e) where
   lower (EnvT _ wa) = wa
@@ -123,10 +125,10 @@ instance ComonadTrans (EnvT e) where
 instance ComonadHoist (EnvT e) where
   cohoist (EnvT e wa) = EnvT e (Identity (extract wa))
 
-instance (Monoid e, FunctorApply w) => FunctorApply (EnvT e w) where
-  EnvT ef wf <.> EnvT ea wa = EnvT (ef `mappend` ea) (wf <.> wa)
+instance (Semigroup e, Apply w) => Apply (EnvT e w) where
+  EnvT ef wf <.> EnvT ea wa = EnvT (ef <> ea) (wf <.> wa)
 
-instance (Monoid e, ComonadApply w) => ComonadApply (EnvT e w)
+instance (Semigroup e, ComonadApply w) => ComonadApply (EnvT e w)
 
 instance Foldable w => Foldable (EnvT e w) where
   foldMap f (EnvT _ w) = foldMap f w

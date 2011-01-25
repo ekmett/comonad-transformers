@@ -68,12 +68,17 @@ runDiscontT ~(DiscontT f s) = (f, s)
 instance Functor (DiscontT s w) where
   fmap g ~(DiscontT f ws) = DiscontT (g . f) ws
 
+instance Extend (DiscontT s w) where
+  duplicate ~(DiscontT f ws) = DiscontT (DiscontT f) ws
+
 instance Comonad (DiscontT s w) where
   extract ~(DiscontT f ws) = f ws
-  duplicate ~(DiscontT f ws) = DiscontT (DiscontT f) ws
 
 instance ComonadTrans (DiscontT s) where
   lower ~(DiscontT f s) = extend f s
+
+-- instance Apply w => Apply (DiscontT s w) where
+-- instance ComonadApply w => ComonadApply (DiscontT s w) 
 
 label :: Comonad w => DiscontT s w a -> s 
 label ~(DiscontT _ ws) = extract ws

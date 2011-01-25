@@ -66,10 +66,12 @@ runDiscontT (DiscontT f s) = (f, s)
 instance Functor (DiscontT s w) where
   fmap g (DiscontT f ws) = DiscontT (g . f) ws
 
-instance Comonad (DiscontT s w) where
-  extract (DiscontT f ws) = f ws
+instance Extend (DiscontT s w) where
   duplicate (DiscontT f ws) = DiscontT (DiscontT f) ws
   extend g (DiscontT f ws) = DiscontT (g . DiscontT f) ws
+
+instance Comonad (DiscontT s w) where
+  extract (DiscontT f ws) = f ws
 
 instance ComonadTrans (DiscontT s) where
   lower (DiscontT f s) = extend f s
