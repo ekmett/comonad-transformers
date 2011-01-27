@@ -32,10 +32,9 @@ module Control.Comonad.Trans.Stream
 
 import Control.Applicative
 import Control.Comonad
-import Control.Comonad.Apply
 import Control.Comonad.Hoist.Class
 import Data.Functor.Apply
-import Data.Functor.Extend.Trans.Class
+import Control.Comonad.Trans.Class
 import Data.Functor.Identity
 import Data.Foldable
 import Data.Traversable
@@ -44,7 +43,7 @@ import Data.Monoid
 import Text.Show.Extras
 
 #ifdef __GLASGOW_HASKELL__
-import Data.Data.Extras
+import Data.Data.Extras hiding (liftF2)
 #endif
 
 -- | Isomorphic to the definition:
@@ -109,13 +108,11 @@ instance (Comonad w, Functor f) => Extend (StreamT f w) where
 instance (Comonad w, Functor f) => Comonad (StreamT f w) where
   extract = fstN . extract . runStreamT
 
-instance (ComonadApply w, Apply f) => Apply (StreamT f w) where
-  StreamT ffs <.> StreamT aas = StreamT (liftW2 wfa ffs aas) where
+instance (Comonad w, Apply w, Apply f) => Apply (StreamT f w) where
+  StreamT ffs <.> StreamT aas = StreamT (liftF2 wfa ffs aas) where
     wfa (f :< fs) (a :< as) = f a :< ((<.>) <$> fs <.> as)
 
-instance (ComonadApply w, Apply f) => ComonadApply (StreamT f w)
-
-instance Functor f => ExtendTrans (StreamT f) where
+instance Functor f => ComonadTrans (StreamT f) where
   lower = fmap fstN . runStreamT 
 
 instance Functor f => ComonadHoist (StreamT f) where

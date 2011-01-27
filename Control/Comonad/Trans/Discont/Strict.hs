@@ -32,7 +32,7 @@ module Control.Comonad.Trans.Discont.Strict
 
 import Data.Functor.Identity
 import Control.Comonad
-import Data.Functor.Extend.Trans.Class
+import Control.Comonad.Trans.Class
 
 #ifdef __GLASGOW_HASKELL__
 import Data.Typeable
@@ -73,7 +73,7 @@ instance Extend (DiscontT s w) where
 instance Comonad (DiscontT s w) where
   extract (DiscontT f ws) = f ws
 
-instance ExtendTrans (DiscontT s) where
+instance ComonadTrans (DiscontT s) where
   lower (DiscontT f s) = extend f s
 
 callCV :: DiscontT s w (DiscontT s w (DiscontT s w a -> a) -> b) -> b

@@ -32,7 +32,7 @@ module Control.Comonad.Trans.Store.Strict
 
 import Control.Comonad
 import Control.Comonad.Hoist.Class
-import Data.Functor.Extend.Trans.Class
+import Control.Comonad.Trans.Class
 import Data.Functor.Identity
 
 #ifdef __GLASGOW_HASKELL__
@@ -76,7 +76,7 @@ instance Extend w => Extend (StoreT s w) where
 instance Comonad w => Comonad (StoreT s w) where
   extract (StoreT wf s) = extract wf s
 
-instance ExtendTrans (StoreT s) where
+instance ComonadTrans (StoreT s) where
   lower (StoreT f s) = fmap ($s) f
 
 instance ComonadHoist (StoreT s) where

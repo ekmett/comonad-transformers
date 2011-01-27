@@ -27,7 +27,6 @@ module Control.Comonad.Trans.Traced
   ) where
 
 import Control.Comonad
-import Control.Comonad.Apply
 import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
 import Data.Functor
@@ -57,7 +56,7 @@ instance (Extend w, Semigroup m) => Extend (TracedT m w) where
 instance (Comonad w, Semigroup m, Monoid m) => Comonad (TracedT m w) where
   extract (TracedT wf) = extract wf mempty
 
-instance (Semigroup m, Monoid m) => ExtendTrans (TracedT m) where
+instance (Semigroup m, Monoid m) => ComonadTrans (TracedT m) where
   lower = fmap ($mempty) . runTracedT
 
 instance (Semigroup m, Monoid m) => ComonadHoist (TracedT m) where
@@ -65,8 +64,6 @@ instance (Semigroup m, Monoid m) => ComonadHoist (TracedT m) where
 
 instance (Apply w, Semigroup m, Monoid m) => Apply (TracedT m w) where
   TracedT wf <.> TracedT wa = TracedT ((\mf ma m -> (mf m) (ma m)) <$> wf <.> wa)
-
-instance (ComonadApply w, Semigroup m, Monoid m) => ComonadApply (TracedT m w)
 
 trace :: (Comonad w, Monoid m) => m -> TracedT m w a -> a
 trace m (TracedT wf) = extract wf m

@@ -32,7 +32,7 @@ module Control.Comonad.Trans.Discont.Lazy
 
 import Data.Functor.Identity
 import Control.Comonad
-import Data.Functor.Extend.Trans.Class
+import Control.Comonad.Trans.Class
 
 #ifdef __GLASGOW_HASKELL__
 import Data.Typeable
@@ -50,7 +50,6 @@ discontTTyCon = mkTyCon "Control.Comonad.Trans.Discont.Lazy.DiscontT"
 {-# NOINLINE discontTTyCon #-}
 
 #endif
-
 
 type Discont s = DiscontT s Identity
 
@@ -74,11 +73,10 @@ instance Extend (DiscontT s w) where
 instance Comonad (DiscontT s w) where
   extract ~(DiscontT f ws) = f ws
 
-instance ExtendTrans (DiscontT s) where
+instance ComonadTrans (DiscontT s) where
   lower ~(DiscontT f s) = extend f s
 
 -- instance Apply w => Apply (DiscontT s w) where
--- instance ComonadApply w => ComonadApply (DiscontT s w) 
 
 label :: Comonad w => DiscontT s w a -> s 
 label ~(DiscontT _ ws) = extract ws

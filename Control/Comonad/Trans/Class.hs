@@ -9,6 +9,14 @@
 -- Portability :  portable
 ----------------------------------------------------------------------------
 module Control.Comonad.Trans.Class 
-  ( ExtendTrans(..) ) where
+  ( ComonadTrans(..) ) where
 
-import Data.Functor.Extend.Trans.Class
+import Control.Comonad
+import Control.Monad.Trans.Identity
+
+class ComonadTrans t where
+  lower :: Extend w => t w a -> w a 
+
+-- avoiding orphans
+instance ComonadTrans IdentityT where
+  lower = runIdentityT
