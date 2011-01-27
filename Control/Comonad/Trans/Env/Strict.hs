@@ -31,11 +31,11 @@ module Control.Comonad.Trans.Env.Strict
 
 import Control.Comonad
 import Control.Comonad.Apply
-import Control.Comonad.Trans.Class
 import Control.Comonad.Hoist.Class
 import Data.Foldable
 import Data.Traversable
 import Data.Functor.Apply
+import Data.Functor.Extend.Trans.Class
 import Data.Functor.Identity
 import Data.Semigroup
 
@@ -119,7 +119,7 @@ instance Extend w => Extend (EnvT e w) where
 instance Comonad w => Comonad (EnvT e w) where
   extract (EnvT _ wa) = extract wa
 
-instance ComonadTrans (EnvT e) where
+instance ExtendTrans (EnvT e) where
   lower (EnvT _ wa) = wa
 
 instance ComonadHoist (EnvT e) where

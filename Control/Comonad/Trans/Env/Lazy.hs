@@ -31,11 +31,11 @@ module Control.Comonad.Trans.Env.Lazy
 
 import Control.Applicative
 import Control.Comonad
-import Control.Comonad.Trans.Class
 import Control.Comonad.Hoist.Class
 import Control.Comonad.Apply
 import Data.Functor.Apply
 import Data.Functor.Identity
+import Data.Functor.Extend.Trans.Class
 import Data.Foldable
 import Data.Traversable
 import Data.Semigroup
@@ -125,7 +125,7 @@ instance (Semigroup e, Apply w) => Apply (EnvT e w) where
 
 instance (Semigroup e, ComonadApply w) => ComonadApply (EnvT e w)
 
-instance ComonadTrans (EnvT e) where
+instance ExtendTrans (EnvT e) where
   lower ~(EnvT _ wa) = wa
 
 instance ComonadHoist (EnvT e) where

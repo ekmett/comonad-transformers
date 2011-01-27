@@ -34,8 +34,8 @@ import Control.Applicative
 import Control.Comonad
 import Control.Comonad.Apply
 import Control.Comonad.Hoist.Class
-import Control.Comonad.Trans.Class
 import Data.Functor.Apply
+import Data.Functor.Extend.Trans.Class
 import Data.Functor.Identity
 import Data.Foldable
 import Data.Traversable
@@ -115,8 +115,8 @@ instance (ComonadApply w, Apply f) => Apply (StreamT f w) where
 
 instance (ComonadApply w, Apply f) => ComonadApply (StreamT f w)
 
-instance Functor f => ComonadTrans (StreamT f) where
-  lower = fmap fstN . runStreamT
+instance Functor f => ExtendTrans (StreamT f) where
+  lower = fmap fstN . runStreamT 
 
 instance Functor f => ComonadHoist (StreamT f) where
   cohoist (StreamT wa) = stream a (cohoist <$> as) where

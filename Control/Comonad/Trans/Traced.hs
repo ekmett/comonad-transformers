@@ -57,7 +57,7 @@ instance (Extend w, Semigroup m) => Extend (TracedT m w) where
 instance (Comonad w, Semigroup m, Monoid m) => Comonad (TracedT m w) where
   extract (TracedT wf) = extract wf mempty
 
-instance (Semigroup m, Monoid m) => ComonadTrans (TracedT m) where
+instance (Semigroup m, Monoid m) => ExtendTrans (TracedT m) where
   lower = fmap ($mempty) . runTracedT
 
 instance (Semigroup m, Monoid m) => ComonadHoist (TracedT m) where

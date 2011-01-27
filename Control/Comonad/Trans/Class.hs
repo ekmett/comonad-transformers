@@ -8,14 +8,7 @@
 -- Stability   :  provisional
 -- Portability :  portable
 ----------------------------------------------------------------------------
-module Control.Comonad.Trans.Class (ComonadTrans(..)) where
+module Control.Comonad.Trans.Class 
+  ( ExtendTrans(..) ) where
 
-import Control.Comonad
-import Control.Monad.Trans.Identity
-
-class ComonadTrans t where
-  lower   :: Comonad w => t w a -> w a 
-
--- avoiding orphans
-instance ComonadTrans IdentityT where
-  lower = runIdentityT
+import Data.Functor.Extend.Trans.Class

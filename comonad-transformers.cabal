@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       0.9.0
+version:       0.9.1
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -24,7 +24,7 @@ library
     array >= 0.3.0.1 && < 0.4,
     comonad >= 0.9 && < 0.10,
     distributive >= 0.1 && < 0.2,
-    functor-apply >= 0.9 && < 0.10,
+    functor-apply >= 0.9.3 && < 0.10,
     semigroups >= 0.3.4 && < 0.4,
     prelude-extras >= 0.1 && < 0.3,
     syb-extras >= 0.1 && < 0.3,
@@ -51,5 +51,7 @@ library
     Control.Comonad.Trans.Store.Strict
     Control.Comonad.Trans.Traced
     Control.Comonad.Trans.Stream
+    Data.Functor.Extend.Trans.Class
 
   ghc-options:      -Wall 
+
