@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       0.10.0
+version:       0.10.1
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -27,7 +27,6 @@ library
     functor-apply >= 0.10.0 && < 0.11,
     semigroups >= 0.3.4 && < 0.4,
     prelude-extras >= 0.1 && < 0.3,
-    syb-extras >= 0.1 && < 0.3,
     transformers >= 0.2.0 && <= 0.3
 
   if impl(ghc)
@@ -51,8 +50,7 @@ library
     Control.Comonad.Trans.Store.Strict
     Control.Comonad.Trans.Traced
     Control.Comonad.Trans.Stream
+    Data.Functor.Coproduct
     Data.Functor.Extend.Trans.Class
-    Data.Functor.Extend.Trans.Maybe
 
   ghc-options:      -Wall 
-

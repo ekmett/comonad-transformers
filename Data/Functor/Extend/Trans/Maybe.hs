@@ -23,7 +23,7 @@ maybe :: a -> (b -> a) -> Maybe a b
 just :: a -> Maybe a
 -}
 
-data MaybeT w a = MaybeT { runMaybeT :: Maybe (w a) }
+newtype MaybeT w a = MaybeT { runMaybeT :: Maybe (w a) }
 
 instance Functor w => Functor (MaybeT w) where
   fmap f = MaybeT . fmap (fmap f) . runMaybeT
