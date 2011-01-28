@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       0.10.1
+version:       0.10.1.1
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -24,7 +24,7 @@ library
     array >= 0.3.0.1 && < 0.4,
     comonad >= 0.9 && < 0.10,
     distributive >= 0.1 && < 0.2,
-    functor-apply >= 0.10.0 && < 0.11,
+    functor-apply >= 0.10.0.2 && < 0.11,
     semigroups >= 0.3.4 && < 0.4,
     prelude-extras >= 0.1 && < 0.3,
     transformers >= 0.2.0 && <= 0.3
