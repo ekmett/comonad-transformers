@@ -9,11 +9,12 @@
 -- Stability   :  provisional
 -- Portability :  portable
 -- 
--- Discont is the Density comonad of a constant functor, just as Cont is a 
--- Codensity monad of a constant functor.
+-- 'Discont' is the density comonad of a constant functor, just as 'Cont' is a 
+-- Codensity monad of a constant functor. (For the definition of Density and
+-- Codensity, see the non-Haskell 98 'adjunctions' package)
 --
--- Note that Discont and Context are isomorphic, but DiscontT and ContextT are
--- not.
+-- Note that while 'Discont' and 'Store' are isomorphic, 'DiscontT' and 'StoreT' 
+-- are not.
 --
 ----------------------------------------------------------------------------
 module Control.Comonad.Trans.Discont.Lazy
