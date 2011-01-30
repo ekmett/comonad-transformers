@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       0.10.1.1
+version:       1.0.0
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -18,20 +18,23 @@ source-repository head
   type: git
   location: git://github.com/ekmett/comonad-transformers.git
 
+flag DeriveDataTypeable
+  manual: False
+  default: True
+
 library
   build-depends: 
     base >= 4 && < 4.4,
     array >= 0.3.0.1 && < 0.4,
-    comonad >= 0.9 && < 0.10,
+    comonad >= 1.0 && < 1.1,
     distributive >= 0.1 && < 0.2,
-    functor-apply >= 0.10.0.2 && < 0.11,
+    semigroupoids >= 1.0 && < 1.1,
     semigroups >= 0.3.4 && < 0.4,
-    prelude-extras >= 0.1 && < 0.3,
     transformers >= 0.2.0 && <= 0.3
 
-  if impl(ghc)
-    build-depends: syb-extras >= 0.1 && <= 0.3
+  if flag(DeriveDataTypeable)
     extensions: DeriveDataTypeable
+    cpp-options: -DLANGUAGE_DeriveDataTypeable
 
   extensions: CPP
 

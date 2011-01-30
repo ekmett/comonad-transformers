@@ -39,7 +39,7 @@ import Data.Functor.Identity
 import Data.Semigroup
 
 #ifdef __GLASGOW_HASKELL__
-import Data.Data.Extras
+import Data.Data
 
 instance (Typeable s, Typeable1 w) => Typeable1 (EnvT s w) where
   typeOf1 dswa = mkTyConApp envTTyCon [typeOf (s dswa), typeOf1 (w dswa)]
@@ -55,24 +55,6 @@ envTTyCon = mkTyCon "Control.Comonad.Trans.Env.Strict.EnvT"
 
 instance (Typeable s, Typeable1 w, Typeable a) => Typeable (EnvT s w a) where
   typeOf = typeOfDefault
-
-{-
-instance (Data e, Data1 w) => Data1 (EnvT e w) where
-    gfoldl1 f z (EnvT e wa) = liftK f wa (z EnvT `f` e)
-    toConstr1 _ = envTConstr
-    gunfold1 k z c = case constrIndex c of
-        1 -> liftF k (k (z EnvT))
-        _ -> error "gunfold"
-    dataTypeOf1 _ = envTDataType
-    dataCast1_1 f = gcast1 f
-
-instance (Data e, Data1 w, Data a) => Data (EnvT e w a) where
-    gfoldl = gfoldl1
-    toConstr = toConstr1
-    gunfold = gunfold1
-    dataTypeOf = dataTypeOf1
-    dataCast1 = dataCast1_1
--}
 
 instance
   ( Data e

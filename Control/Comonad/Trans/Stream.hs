@@ -40,10 +40,8 @@ import Data.Foldable
 import Data.Traversable
 import Data.Monoid
 
-import Text.Show.Extras
-
 #ifdef __GLASGOW_HASKELL__
-import Data.Data.Extras hiding (liftF2)
+import Data.Data
 #endif
 
 -- | Isomorphic to the definition:
@@ -65,13 +63,6 @@ unfolds f a = let (h, t) = f a in stream h (unfolds f <$> t)
 
 data Node f w a = a :< f (StreamT f w a)
 
-instance (Show1 f, Show1 w) => Show1 (Node f w) where
-  showsPrec1 d (a :< as) = showParen (d > 5) $
-    showsPrec 6 a . showString " :< " . showsPrec1 5 as
-
-instance (Show1 f, Show1 w, Show a) => Show (Node f w a) where
-  showsPrec = showsPrec1
-
 
 infixr 5 :<
 
@@ -90,12 +81,13 @@ instance (Functor w, Functor f)  => Functor (Node f w) where
 -- value by using 'lower' or runStream
 data StreamT f w a = StreamT { runStreamT :: w (Node f w a) }
 
-instance (Show1 f, Show1 w) => Show1 (StreamT f w) where
-  showsPrec1 d (StreamT wa) = showParen (d > 10) $ 
-    showsPrec1 11 wa
+instance (Show a, Show (StreamT f w a), Show (f (StreamT f w a)), Show (w (Node f w a))) => Show (Node f w a) where
+  showsPrec d (a :< as) = showParen (d > 5) $
+    showsPrec 6 a . showString " :< " . showsPrec 5 as
 
-instance (Show1 f, Show1 w, Show a) => Show (StreamT f w a) where
-  showsPrec = showsPrec1
+instance (Show (w (Node f w a)), Show (Node f w a), Show a, Show (f (StreamT f w a))) => Show (StreamT f w a) where
+  showsPrec d (StreamT wa) = showParen (d > 10) $ 
+    showsPrec 11 wa
 
 instance (Functor w, Functor f) => Functor (StreamT f w) where
   fmap f = StreamT . fmap (fmap f) . runStreamT
@@ -171,17 +163,6 @@ streamTTyCon :: TyCon
 streamTTyCon = mkTyCon "Control.Comonad.Trans.Stream.StreamT"
 {-# NOINLINE streamTTyCon #-}
 
-{-
-instance (Data1 f, Data1 w) => Data1 (Node f w) where
-  gfoldl1 k z (a :< as) = liftK k (z (:<) `k` a) as
-  toConstr1 _ = nodeConstr
-  gunfold1 f z c = case constrIndex c of
-    1 -> liftF f (f (z (:<)))
-    _ -> error "gunfold"
-  dataTypeOf1 _ = nodeDataType
-  dataCast1_1 f = gcast1 f
--}
-
 instance (Typeable1 f, Typeable1 w, Data a, Data (f (StreamT f w a)), Data (StreamT f w a)) => Data (Node f w a) where
   gfoldl k z (a :< as) = z (:<) `k` a `k` as
   toConstr _ = nodeConstr
@@ -191,32 +172,6 @@ instance (Typeable1 f, Typeable1 w, Data a, Data (f (StreamT f w a)), Data (Stre
   dataTypeOf _ = nodeDataType
   dataCast1 f = gcast1 f
 
-{-
-instance (Data1 f, Data1 w, Data a) => Data (Node f w a) where
-  gfoldl = gfoldl1
-  toConstr = toConstr1
-  gunfold = gunfold1
-  dataTypeOf = dataTypeOf1
-  dataCast1 = dataCast1_1
-
-instance (Data1 f, Data1 w) => Data1 (StreamT f w) where
-  gfoldl1 k z (StreamT a) = liftK k (z StreamT) (undefined a)
-  toConstr1 _ = streamTConstr
-  gunfold1 k z c = case constrIndex c of
-    1 -> liftF k (z StreamT)
-    _ -> error "gunfold"
-  dataTypeOf1 _ = streamTDataType
-  dataCast1_1 f = gcast1 f
--}
-
-{-
-instance (Data1 f, Data1 w, Data a) => Data (StreamT f w a) where
-  gfoldl = gfoldl1
-  toConstr = toConstr1
-  gunfold = gunfold1
-  dataTypeOf = dataTypeOf1
-  dataCast1 = dataCast1_1
--}
 -- if any structure ever cried out for generic programming, this is it
 instance 
   ( Typeable1 f

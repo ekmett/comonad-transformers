@@ -26,6 +26,9 @@ module Control.Comonad.Trans.Traced
   , censor
   ) where
 
+import Control.Applicative
+import Control.Monad.Instances
+import Control.Monad (ap)
 import Control.Comonad
 import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
@@ -50,6 +53,13 @@ newtype TracedT m w a = TracedT { runTracedT :: w (m -> a) }
 instance Functor w => Functor (TracedT m w) where
   fmap g = TracedT . fmap (g .) . runTracedT
 
+instance Apply w => Apply (TracedT m w) where
+  TracedT wf <.> TracedT wa = TracedT (ap <$> wf <.> wa)
+
+instance Applicative w => Applicative (TracedT m w) where
+  pure = TracedT . pure . const 
+  TracedT wf <*> TracedT wa = TracedT (ap <$> wf <*> wa)
+
 instance (Extend w, Semigroup m) => Extend (TracedT m w) where
   extend f = TracedT . extend (\wf m -> f (TracedT (fmap (. (<>) m) wf))) . runTracedT
 
@@ -61,9 +71,6 @@ instance (Semigroup m, Monoid m) => ComonadTrans (TracedT m) where
 
 instance (Semigroup m, Monoid m) => ComonadHoist (TracedT m) where
   cohoist = traced . extract . runTracedT
-
-instance (Apply w, Semigroup m, Monoid m) => Apply (TracedT m w) where
-  TracedT wf <.> TracedT wa = TracedT ((\mf ma m -> (mf m) (ma m)) <$> wf <.> wa)
 
 trace :: (Comonad w, Monoid m) => m -> TracedT m w a -> a
 trace m (TracedT wf) = extract wf m
