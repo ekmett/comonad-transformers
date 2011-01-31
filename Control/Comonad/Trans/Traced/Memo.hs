@@ -22,6 +22,7 @@ module Control.Comonad.Trans.Traced.Memo
   -- * Traced comonad transformer
   , TracedT
   , tracedT
+  , runTracedT
   -- * Operations
   , trace
   , listen
