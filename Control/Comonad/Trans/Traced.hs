@@ -45,7 +45,7 @@ type Traced m = TracedT m Identity
 traced :: (m -> a) -> Traced m a
 traced f = TracedT (Identity f)
 
-runTraced :: Monoid m => Traced m a -> m -> a
+runTraced :: Traced m a -> m -> a
 runTraced (TracedT (Identity f)) = f
 
 newtype TracedT m w a = TracedT { runTracedT :: w (m -> a) }

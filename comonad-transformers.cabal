@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       1.0.1
+version:       1.1.0
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -45,8 +45,6 @@ library
     Control.Comonad.Trans.Discont.Lazy
     Control.Comonad.Trans.Discont.Strict
     Control.Comonad.Trans.Discont.Memo
-    Control.Comonad.Trans.Discont.Memo.Lazy
-    Control.Comonad.Trans.Discont.Memo.Strict
     Control.Comonad.Trans.Env
     Control.Comonad.Trans.Env.Lazy
     Control.Comonad.Trans.Env.Strict
@@ -55,9 +53,8 @@ library
     Control.Comonad.Trans.Store.Lazy
     Control.Comonad.Trans.Store.Strict
     Control.Comonad.Trans.Store.Memo
-    Control.Comonad.Trans.Store.Memo.Lazy
-    Control.Comonad.Trans.Store.Memo.Strict
     Control.Comonad.Trans.Traced
+    Control.Comonad.Trans.Traced.Memo
     Control.Comonad.Trans.Stream
     Data.Functor.Coproduct
     Data.Functor.Extend.Trans.Class
