@@ -57,6 +57,5 @@ library
     Control.Comonad.Trans.Traced.Memo
     Control.Comonad.Trans.Stream
     Data.Functor.Coproduct
-    Data.Functor.Extend.Trans.Class
 
   ghc-options:      -Wall 
