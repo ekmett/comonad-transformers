@@ -85,11 +85,11 @@ instance ComonadHoist (StoreT s) where
 get :: StoreT s w a -> s
 get (StoreT _ s) = s
 
-put :: Comonad w => s -> StoreT s w a -> a 
-put s (StoreT f _) = extract f s
+put :: Comonad w => s -> StoreT s w a -> StoreT s w a
+put s (StoreT f _) = StoreT f s
 
-modify :: Comonad w => (s -> s) -> StoreT s w a -> a
-modify f (StoreT g s) = extract g (f s)
+modify :: Comonad w => (s -> s) -> StoreT s w a -> StoreT s w a
+modify f (StoreT g s) = StoreT g (f s)
 
 experiment :: (Comonad w, Functor f) => f (s -> s) -> StoreT s w a -> f a
 experiment fs (StoreT g s) = fmap (\f -> extract g (f s)) fs

@@ -1,7 +1,7 @@
 {-# LANGUAGE CPP, FlexibleContexts #-}
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Control.Comonad.Trans.Context
+-- Module      :  Control.Comonad.Trans.Env.Lazy
 -- Copyright   :  (C) 2008-2011 Edward Kmett
 -- License     :  BSD-style (see the file LICENSE)
 --
@@ -23,10 +23,12 @@ module Control.Comonad.Trans.Env.Lazy
   -- * The environment comonad transformer
   , EnvT(..)
   , runEnvT
+  , lowerEnvT
   -- * Combinators
   , ask
   , asks
   , local
+  -- , liftCallCV
   ) where
 
 import Control.Applicative
@@ -105,19 +107,19 @@ instance (Semigroup e, Apply w) => Apply (EnvT e w) where
   ~(EnvT ef wf) <.> ~(EnvT ea wa) = EnvT (ef <> ea) (wf <.> wa)
 
 instance ComonadTrans (EnvT e) where
-  lower ~(EnvT _ wa) = wa
+  lower (EnvT _ wa) = wa
 
 instance ComonadHoist (EnvT e) where
   cohoist ~(EnvT e wa) = EnvT e (Identity (extract wa))
 
 instance Foldable w => Foldable (EnvT e w) where
-  foldMap f (EnvT _ w) = foldMap f w
+  foldMap f ~(EnvT _ w) = foldMap f w
 
 instance Traversable w => Traversable (EnvT e w) where
   traverse f (EnvT e w) = EnvT e <$> traverse f w
 
 ask :: EnvT e w a -> e
-ask ~(EnvT e _) = e
+ask (EnvT e _) = e
 
 asks :: (e -> f) -> EnvT e w a -> f
 asks f = f . ask
@@ -125,3 +127,10 @@ asks f = f . ask
 local :: (e -> e) -> EnvT e w a -> EnvT e w a
 local f ~(EnvT e wa) = EnvT (f e) wa
 
+lowerEnvT :: EnvT e w a -> w a 
+lowerEnvT (EnvT _ wa) = wa
+
+{-
+liftCallCV :: Functor w => (w (w (w a -> a) -> b) -> b) -> EnvT e w (EnvT e w (EnvT e w a -> a) -> b) -> b
+liftCallCV callCV ~(EnvT e wa) = callCV $ \c -> ...
+-}

@@ -80,7 +80,7 @@ instance ComonadTrans (DiscontT s) where
 -- instance Apply w => Apply (DiscontT s w) where
 
 label :: Comonad w => DiscontT s w a -> s 
-label ~(DiscontT _ ws) = extract ws
+label (DiscontT _ ws) = extract ws
 
 callCV :: DiscontT s w (DiscontT s w (DiscontT s w a -> a) -> b) -> b
 callCV ~(DiscontT k s) = k s (DiscontT (\s' ~(DiscontT k' _) -> k' s') s)
