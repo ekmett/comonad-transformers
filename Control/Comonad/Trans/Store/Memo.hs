@@ -32,10 +32,14 @@ module Control.Comonad.Trans.Store.Memo
   , peek, peeks
   ) where
 
+import Control.Applicative
 import Control.Comonad
 import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
 import Data.Functor.Identity
+import Data.Functor.Apply
+import Data.Monoid
+import Data.Semigroup
 
 #ifdef __GLASGOW_HASKELL__
 import Data.Typeable
@@ -76,6 +80,13 @@ storeT wf s = StoreT wf s (fmap ($s) wf)
 
 instance Functor w => Functor (StoreT s w) where
   fmap f (StoreT wf s w) = StoreT (fmap (f .) wf) s (fmap f w)
+
+instance (Apply w, Semigroup s) => Apply (StoreT s w) where
+  StoreT ff m _ <.> StoreT fa n _ = storeT ((<*>) <$> ff <.> fa) (m <> n)
+
+instance (Applicative w, Semigroup s, Monoid s) => Applicative (StoreT s w) where
+  pure a = storeT (pure (const a)) mempty
+  StoreT ff m _ <*> StoreT fa n _ = storeT ((<*>) <$> ff <*> fa) (m `mappend` n)
 
 instance Extend w => Extend (StoreT s w) where
   duplicate (StoreT wf s _) = storeT (extend storeT wf) s 

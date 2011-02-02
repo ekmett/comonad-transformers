@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       1.5.0.1
+version:       1.5.0.2
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -25,6 +25,7 @@ flag DeriveDataTypeable
 library
   build-depends: 
     base >= 4 && < 4.4,
+    MemoTrie >= 0.4.9 && < 0.5,
     comonad >= 1.0.1 && < 1.1,
     distributive >= 0.1 && < 0.2,
     semigroupoids >= 1.0 && < 1.2,

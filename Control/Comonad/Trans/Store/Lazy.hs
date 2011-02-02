@@ -30,10 +30,14 @@ module Control.Comonad.Trans.Store.Lazy
   , peek, peeks
   ) where
 
+import Control.Applicative
 import Control.Comonad
 import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
 import Data.Functor.Identity
+import Data.Functor.Apply
+import Data.Monoid
+import Data.Semigroup
 
 #ifdef __GLASGOW_HASKELL__
 import Data.Typeable
@@ -68,6 +72,13 @@ runStoreT ~(StoreT wf s) = (wf, s)
 
 instance Functor w => Functor (StoreT s w) where
   fmap f ~(StoreT wf s) = StoreT (fmap (f .) wf) s
+
+instance (Apply w, Semigroup s) => Apply (StoreT s w) where
+  ~(StoreT ff m) <.> ~(StoreT fa n) = StoreT ((<*>) <$> ff <.> fa) (m <> n)
+
+instance (Applicative w, Semigroup s, Monoid s) => Applicative (StoreT s w) where
+  pure a = StoreT (pure (const a)) mempty
+  ~(StoreT ff m) <*> ~(StoreT fa n) = StoreT ((<*>) <$> ff <*> fa) (m `mappend` n)
 
 instance Extend w => Extend (StoreT s w) where
   duplicate ~(StoreT wf s) = StoreT (extend StoreT wf) s
