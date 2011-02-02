@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.Comonad.Trans.Store.Lazy
@@ -10,9 +11,9 @@
 --
 -- The lazy store (state-in-context/costate) comonad transformer is subject to the laws:
 -- 
--- > x = put (get x) x
--- > y = get (put y) x)
--- > put y x = put y (put z x)
+-- > x = seek (pos x) x
+-- > y = pos (seek y x)
+-- > seek y x = seek y (seek z x)
 --
 -- Thanks go to Russell O'Connor and Daniel Peebles for their help formulating 
 -- and proving the laws for this comonad transformer.
@@ -24,10 +25,9 @@ module Control.Comonad.Trans.Store.Lazy
   -- * The Store comonad transformer
   , StoreT(..), runStoreT
   -- * Operations
-  , get
-  , put
-  , modify
-  , experiment
+  , pos
+  , seek, seeks
+  , peek, peeks
   ) where
 
 import Control.Comonad
@@ -82,14 +82,28 @@ instance ComonadTrans (StoreT s) where
 instance ComonadHoist (StoreT s) where
   cohoist ~(StoreT f s) = StoreT (Identity (extract f)) s
 
-get :: StoreT s w a -> s
-get (StoreT _ s) = s
+-- | Read the current position
+pos :: StoreT s w a -> s
+pos (StoreT _ s) = s
 
-put :: Comonad w => s -> StoreT s w a -> StoreT s w a 
-put s ~(StoreT f _) = StoreT f s
+-- | Seek to an absolute location
+--
+-- > seek s = peek s . duplicate
+seek :: Comonad w => s -> StoreT s w a -> StoreT s w a 
+seek s ~(StoreT f _) = StoreT f s
 
-modify :: Comonad w => (s -> s) -> StoreT s w a -> StoreT s w a
-modify f ~(StoreT g s) = StoreT g (f s)
+-- | Seek to a relative location
+--
+-- > seeks f = peeks f . duplicate
+seeks :: Comonad w => (s -> s) -> StoreT s w a -> StoreT s w a
+seeks f ~(StoreT g s) = StoreT g (f s)
 
-experiment :: (Comonad w, Functor f) => f (s -> s) -> StoreT s w a -> f a
-experiment fs ~(StoreT g s) = fmap (\f -> extract g (f s)) fs
+-- | Peek at a value at a given absolute location
+--
+-- > peek x . extend (peek y) = peek y
+peek :: Comonad w => s -> StoreT s w a -> a
+peek s (StoreT g _) = extract g s
+
+-- | Peek at a value at a given relative location
+peeks :: Comonad w => (s -> s) -> StoreT s w a -> a
+peeks f ~(StoreT g s) = extract g (f s)
