@@ -48,7 +48,7 @@ instance (Typeable s, Typeable1 w, Typeable a) => Typeable (StoreT s w a) where
   typeOf = typeOfDefault
 
 storeTTyCon :: TyCon
-storeTTyCon = mkTyCon "Control.Comonad.Trans.Store.Lazy.StoreT"
+storeTTyCon = mkTyCon "Control.Comonad.Trans.Store.Strict.StoreT"
 {-# NOINLINE storeTTyCon #-}
 #endif
 

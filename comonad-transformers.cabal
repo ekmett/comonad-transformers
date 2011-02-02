@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       1.5.0
+version:       1.5.0.1
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -9,8 +9,8 @@ maintainer:    Edward A. Kmett <ekmett@gmail.com>
 stability:     provisional
 homepage:      git://github.com/ekmett/comonad-transformers/
 copyright:     Copyright (C) 2008-2011 Edward A. Kmett
-synopsis:      Haskell 98 comonad transformers
-description:   Haskell 98 comonad transformers
+synopsis:      Comonad transformers
+description:   Comonad transformers
 build-type:    Simple
 extra-source-files: coq/Store.v
 
@@ -25,8 +25,7 @@ flag DeriveDataTypeable
 library
   build-depends: 
     base >= 4 && < 4.4,
-    array >= 0.3.0.1 && < 0.4,
-    comonad >= 1.0 && < 1.1,
+    comonad >= 1.0.1 && < 1.1,
     distributive >= 0.1 && < 0.2,
     semigroupoids >= 1.0 && < 1.2,
     semigroups >= 0.3.4 && < 0.4,
