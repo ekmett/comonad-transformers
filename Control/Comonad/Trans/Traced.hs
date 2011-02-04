@@ -32,12 +32,12 @@ import Control.Monad (ap)
 import Control.Comonad
 import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
+import Data.Distributive
 import Data.Functor
 import Data.Functor.Apply
 import Data.Functor.Identity
 import Data.Monoid
 import Data.Semigroup
-
 import Data.Typeable
 
 type Traced m = TracedT m Identity
@@ -71,6 +71,9 @@ instance (Semigroup m, Monoid m) => ComonadTrans (TracedT m) where
 
 instance (Semigroup m, Monoid m) => ComonadHoist (TracedT m) where
   cohoist = traced . extract . runTracedT
+
+instance Distributive w => Distributive (TracedT m w) where
+  distribute = TracedT . fmap (\tma m -> fmap ($m) tma) . collect runTracedT
 
 trace :: (Comonad w, Monoid m) => m -> TracedT m w a -> a
 trace m (TracedT wf) = extract wf m
