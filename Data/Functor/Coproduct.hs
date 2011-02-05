@@ -18,9 +18,12 @@ module Data.Functor.Coproduct
 import Control.Comonad
 import Data.Functor.Apply
 import Data.Functor.Alt
+import Data.Functor.Contravariant
 import Data.Functor.Extend
 import Data.Foldable
 import Data.Traversable
+import Data.Semigroup.Foldable
+import Data.Semigroup.Traversable
 
 newtype Coproduct f g a = Coproduct { getCoproduct :: Either (f a) (g a) }
 
@@ -39,10 +42,18 @@ instance (Functor f, Functor g) => Functor (Coproduct f g) where
 instance (Foldable f, Foldable g) => Foldable (Coproduct f g) where
   foldMap f = coproduct (foldMap f) (foldMap f)
 
+instance (Foldable1 f, Foldable1 g) => Foldable1 (Coproduct f g) where
+  foldMap1 f = coproduct (foldMap1 f) (foldMap1 f)
+
 instance (Traversable f, Traversable g) => Traversable (Coproduct f g) where
   traverse f = coproduct
     (fmap (Coproduct . Left) . traverse f)  
     (fmap (Coproduct . Right) . traverse f)
+
+instance (Traversable1 f, Traversable1 g) => Traversable1 (Coproduct f g) where
+  traverse1 f = coproduct
+    (fmap (Coproduct . Left) . traverse1 f)  
+    (fmap (Coproduct . Right) . traverse1 f)
   
 instance (Extend f, Extend g) => Extend (Coproduct f g) where
   extend f = Coproduct . coproduct
@@ -51,3 +62,6 @@ instance (Extend f, Extend g) => Extend (Coproduct f g) where
 
 instance (Comonad f, Comonad g) => Comonad (Coproduct f g) where
   extract = coproduct extract extract
+
+instance (Contravariant f, Contravariant g) => Contravariant (Coproduct f g) where
+  contramap f = Coproduct . coproduct (Left . contramap f) (Right . contramap f)
