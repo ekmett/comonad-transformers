@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       1.5.0.4
+version:       1.5.1
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -56,5 +56,6 @@ library
     Control.Comonad.Trans.Traced.Memo
     Control.Comonad.Trans.Stream
     Data.Functor.Coproduct
+    Data.Functor.Composition
 
   ghc-options:      -Wall 
