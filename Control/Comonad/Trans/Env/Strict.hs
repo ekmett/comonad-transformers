@@ -23,6 +23,7 @@ module Control.Comonad.Trans.Env.Strict
   -- * The strict environment comonad transformer
   , EnvT(..)
   , runEnvT
+  , lowerEnvT
   -- * Combinators
   , ask
   , asks
@@ -102,6 +103,9 @@ instance Comonad w => Comonad (EnvT e w) where
 
 instance ComonadTrans (EnvT e) where
   lower (EnvT _ wa) = wa
+
+lowerEnvT :: EnvT e w a -> w a
+lowerEnvT (EnvT _ wa) = wa
 
 instance ComonadHoist (EnvT e) where
   cohoist (EnvT e wa) = EnvT e (Identity (extract wa))
