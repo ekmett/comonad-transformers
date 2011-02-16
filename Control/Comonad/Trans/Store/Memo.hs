@@ -26,6 +26,7 @@ module Control.Comonad.Trans.Store.Memo
     Store, store, runStore
   -- * The Store comonad transformer
   , StoreT, storeT, runStoreT
+  , lowerStoreT
   -- * Operations
   , pos
   , seek, seeks
@@ -96,6 +97,9 @@ instance Comonad w => Comonad (StoreT s w) where
 
 instance ComonadTrans (StoreT s) where
   lower (StoreT _ _ w) = w
+
+lowerStoreT :: StoreT s w a -> w a
+lowerStoreT (StoreT _ _ w) = w
 
 instance ComonadHoist (StoreT s) where
   cohoist (StoreT f s w) = StoreT (Identity (extract f)) s (Identity (extract w))

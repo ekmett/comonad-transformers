@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       1.5.2
+version:       1.5.2.1
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
