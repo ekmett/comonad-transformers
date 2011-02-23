@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       1.5.2.1
+version:       1.5.2.2
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -26,6 +26,7 @@ library
   build-depends: 
     base >= 4 && < 4.4,
     comonad >= 1.0.1 && < 1.1,
+    containers >= 0.4 && < 0.5,
     contravariant >= 0.1.2 && < 0.2,
     distributive >= 0.1 && < 0.2,
     semigroupoids >= 1.1.1 && < 1.2,
@@ -56,7 +57,12 @@ library
     Control.Comonad.Trans.Traced
     Control.Comonad.Trans.Traced.Memo
     Control.Comonad.Trans.Stream
+
     Data.Functor.Coproduct
     Data.Functor.Composition
+
+    Data.Lens.Common
+    Data.Lens.Lazy
+    Data.Lens.Strict
 
   ghc-options:      -Wall 
