@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       1.5.2.5
+version:       1.5.2.6
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -29,7 +29,7 @@ library
     containers >= 0.3 && < 0.5,
     contravariant >= 0.1.2 && < 0.2,
     distributive >= 0.2 && < 0.3,
-    semigroupoids >= 1.1.1 && < 1.2,
+    semigroupoids >= 1.1.2 && < 1.2,
     semigroups >= 0.3.4 && < 0.4,
     transformers >= 0.2.0 && <= 0.3
 
