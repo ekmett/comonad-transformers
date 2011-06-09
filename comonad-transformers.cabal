@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       1.6.4
+version:       1.7
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -57,7 +57,6 @@ library
     Control.Comonad.Trans.Store.Memo
     Control.Comonad.Trans.Traced
     Control.Comonad.Trans.Traced.Memo
-    Control.Comonad.Trans.Stream
 
     Control.Monad.Trans.Free
 
