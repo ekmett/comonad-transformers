@@ -60,8 +60,4 @@ library
     Data.Functor.Coproduct
     Data.Functor.Composition
 
-    Data.Lens.Common
-    Data.Lens.Lazy
-    Data.Lens.Strict
-
   ghc-options:      -Wall 
