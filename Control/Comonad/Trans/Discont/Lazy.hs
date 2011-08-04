@@ -26,9 +26,6 @@ module Control.Comonad.Trans.Discont.Lazy
   , runDiscont
   , DiscontT(..)
   , runDiscontT
-  -- * Combinators
-  , callCV
-  , label
   ) where
 
 import Data.Functor.Identity
@@ -79,8 +76,3 @@ instance ComonadTrans (DiscontT s) where
 
 -- instance Apply w => Apply (DiscontT s w) where
 
-label :: Comonad w => DiscontT s w a -> s 
-label (DiscontT _ ws) = extract ws
-
-callCV :: DiscontT s w (DiscontT s w (DiscontT s w a -> a) -> b) -> b
-callCV ~(DiscontT k s) = k s (DiscontT (\s' ~(DiscontT k' _) -> k' s') s)
