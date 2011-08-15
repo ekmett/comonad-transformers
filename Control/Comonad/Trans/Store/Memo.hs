@@ -39,7 +39,6 @@ import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
 import Data.Functor.Identity
 import Data.Functor.Apply
-import Data.Monoid
 import Data.Semigroup
 
 #ifdef __GLASGOW_HASKELL__

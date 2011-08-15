@@ -36,7 +36,6 @@ import Data.Distributive
 import Data.Functor
 import Data.Functor.Apply
 import Data.Functor.Identity
-import Data.Monoid
 import Data.Semigroup
 import Data.Typeable
 

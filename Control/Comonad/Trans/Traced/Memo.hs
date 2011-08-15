@@ -39,7 +39,7 @@ import Control.Comonad.Trans.Class
 import Data.Functor
 import Data.Functor.Apply
 import Data.Functor.Identity
-import Data.Monoid
+import Data.Semigroup
 import Data.Typeable
 
 type Traced m = TracedT m Identity
