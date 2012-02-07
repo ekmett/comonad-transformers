@@ -16,10 +16,7 @@ module Data.Functor.Coproduct
   ) where
 
 import Control.Comonad
-import Data.Functor.Apply
-import Data.Functor.Alt
 import Data.Functor.Contravariant
-import Data.Functor.Extend
 import Data.Foldable
 import Data.Traversable
 import Data.Semigroup.Foldable
