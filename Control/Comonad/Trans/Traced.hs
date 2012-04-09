@@ -12,7 +12,7 @@
 --
 ----------------------------------------------------------------------------
 module Control.Comonad.Trans.Traced
-  ( 
+  (
   -- * Traced comonad
     Traced
   , traced
@@ -27,13 +27,12 @@ module Control.Comonad.Trans.Traced
   ) where
 
 import Control.Applicative
-import Control.Monad.Instances
+import Control.Monad.Instances ()
 import Control.Monad (ap)
 import Control.Comonad
 import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
 import Data.Distributive
-import Data.Functor
 import Data.Functor.Apply
 import Data.Functor.Identity
 import Data.Semigroup
@@ -56,7 +55,7 @@ instance Apply w => Apply (TracedT m w) where
   TracedT wf <.> TracedT wa = TracedT (ap <$> wf <.> wa)
 
 instance Applicative w => Applicative (TracedT m w) where
-  pure = TracedT . pure . const 
+  pure = TracedT . pure . const
   TracedT wf <*> TracedT wa = TracedT (ap <$> wf <*> wa)
 
 instance (Extend w, Semigroup m) => Extend (TracedT m w) where
@@ -81,7 +80,7 @@ listen :: Functor w => TracedT m w a -> TracedT m w (a, m)
 listen = TracedT . fmap (\f m -> (f m, m)) . runTracedT
 
 listens :: Functor w => (m -> b) -> TracedT m w a -> TracedT m w (a, b)
-listens g = TracedT . fmap (\f m -> (f m, g m)) . runTracedT 
+listens g = TracedT . fmap (\f m -> (f m, g m)) . runTracedT
 
 censor :: Functor w => (m -> m) -> TracedT m w a -> TracedT m w a
 censor g = TracedT . fmap (. g) . runTracedT
@@ -97,7 +96,11 @@ instance (Typeable s, Typeable1 w) => Typeable1 (TracedT s w) where
       w = undefined
 
 tracedTTyCon :: TyCon
+#if __GLASGOW_HASKELL__ < 704
 tracedTTyCon = mkTyCon "Control.Comonad.Trans.Traced.TracedT"
+#else
+tracedTTyCon = mkTyCon3 "comonad-transformers" "Control.Comonad.Trans.Traced" "TracedT"
+#endif
 {-# NOINLINE tracedTTyCon #-}
 
 #endif

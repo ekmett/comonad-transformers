@@ -1,0 +1,4 @@
+2.1:
+ * Removed Discont
+ * Switched to mkTyCon3
+ * Upgraded to transformers 0.3

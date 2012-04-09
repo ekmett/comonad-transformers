@@ -2,7 +2,7 @@
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.Comonad.Trans.Cofree
--- Copyright   :  (C) 2008-2011 Edward Kmett,
+-- Copyright   :  (C) 2008-2012 Edward Kmett,
 -- License     :  BSD-style (see the file LICENSE)
 --
 -- Maintainer  :  Edward Kmett <ekmett@gmail.com>
@@ -67,7 +67,7 @@ instance ComonadTrans Cofree where
   lower (_ :< as) = fmap extract as
 
 -- | lower . section = id
-section :: Comonad f => f a -> Cofree f a 
+section :: Comonad f => f a -> Cofree f a
 section as = extract as :< extend section as
 
 instance Apply f => Apply (Cofree f) where
@@ -124,7 +124,11 @@ instance (Typeable1 f, Typeable a) => Typeable (Cofree f a) where
   typeOf = typeOfDefault
 
 cofreeTyCon :: TyCon
+#if __GLASGOW_HASKELL < 704
 cofreeTyCon = mkTyCon "Control.Comonad.Cofree.Cofree"
+#else
+cofreeTyCon = mkTyCon3 "comonad-transformers" "Control.Comonad.Cofree" "Cofree"
+#endif
 {-# NOINLINE cofreeTyCon #-}
 
 instance

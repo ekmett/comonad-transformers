@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       2.0.3
+version:       2.1
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -8,11 +8,11 @@ author:        Edward A. Kmett
 maintainer:    Edward A. Kmett <ekmett@gmail.com>
 stability:     provisional
 homepage:      http://github.com/ekmett/comonad-transformers/
-copyright:     Copyright (C) 2008-2011 Edward A. Kmett
+copyright:     Copyright (C) 2008-2012 Edward A. Kmett
 synopsis:      Comonad transformers
 description:   Comonad transformers
 build-type:    Simple
-extra-source-files: coq/Store.v
+extra-source-files: coq/Store.v CHANGELOG
 
 source-repository head
   type: git
@@ -23,15 +23,15 @@ flag DeriveDataTypeable
   default: True
 
 library
-  build-depends: 
+  build-depends:
     base          >= 4       && < 5,
-    comonad       >= 1.1.1.1 && < 1.2,
+    comonad       >= 1.1.1.3 && < 1.2,
     containers    >= 0.3     && < 0.5,
-    contravariant >= 0.1.2   && < 0.2,
-    distributive  >= 0.2     && < 0.3,
-    semigroupoids >= 1.2.6.1 && < 1.3,
-    semigroups    >= 0.8     && < 0.9,
-    transformers  >= 0.2.0   && < 0.3
+    contravariant >= 0.2.0.1 && < 0.3,
+    distributive  >= 0.2.1   && < 0.3,
+    semigroupoids >= 1.3     && < 1.4,
+    semigroups    >= 0.8.2   && < 0.9,
+    transformers  >= 0.3     && < 0.4
 
   if flag(DeriveDataTypeable)
     extensions: DeriveDataTypeable
@@ -42,22 +42,11 @@ library
   exposed-modules:
     Control.Comonad.Hoist.Class
     Control.Comonad.Trans.Class
-    Control.Comonad.Trans.Discont
-    Control.Comonad.Trans.Discont.Lazy
-    Control.Comonad.Trans.Discont.Strict
-    Control.Comonad.Trans.Discont.Memo
     Control.Comonad.Trans.Env
-    Control.Comonad.Trans.Env.Lazy
-    Control.Comonad.Trans.Env.Strict
     Control.Comonad.Trans.Identity
     Control.Comonad.Trans.Store
-    Control.Comonad.Trans.Store.Lazy
-    Control.Comonad.Trans.Store.Strict
-    Control.Comonad.Trans.Store.Memo
     Control.Comonad.Trans.Traced
-    Control.Comonad.Trans.Traced.Memo
-
     Data.Functor.Coproduct
     Data.Functor.Composition
 
-  ghc-options:      -Wall 
+  ghc-options:      -Wall
