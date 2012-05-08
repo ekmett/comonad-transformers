@@ -9,7 +9,7 @@
 -- Portability :  portable
 ----------------------------------------------------------------------------
 module Data.Functor.Coproduct
-  ( Coproduct(..) 
+  ( Coproduct(..)
   , left
   , right
   , coproduct
@@ -44,14 +44,14 @@ instance (Foldable1 f, Foldable1 g) => Foldable1 (Coproduct f g) where
 
 instance (Traversable f, Traversable g) => Traversable (Coproduct f g) where
   traverse f = coproduct
-    (fmap (Coproduct . Left) . traverse f)  
+    (fmap (Coproduct . Left) . traverse f)
     (fmap (Coproduct . Right) . traverse f)
 
 instance (Traversable1 f, Traversable1 g) => Traversable1 (Coproduct f g) where
   traverse1 f = coproduct
-    (fmap (Coproduct . Left) . traverse1 f)  
+    (fmap (Coproduct . Left) . traverse1 f)
     (fmap (Coproduct . Right) . traverse1 f)
-  
+
 instance (Extend f, Extend g) => Extend (Coproduct f g) where
   extend f = Coproduct . coproduct
     (Left . extend (f . Coproduct . Left))

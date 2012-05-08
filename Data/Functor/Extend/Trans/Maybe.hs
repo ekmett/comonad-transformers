@@ -15,13 +15,6 @@ import Control.Applicative
 import Data.Functor.Apply
 import Data.Functor.Alt
 import Data.Functor.Extend
--- import Data.Functor.Extend.Trans.Class
-
-{-
-type Maybe = MaybeT Identity
-maybe :: a -> (b -> a) -> Maybe a b
-just :: a -> Maybe a
--}
 
 newtype MaybeT w a = MaybeT { runMaybeT :: Maybe (w a) }
 
@@ -32,18 +25,13 @@ instance Extend w => Extend (MaybeT w) where
   duplicate (MaybeT (Just w)) = MaybeT $ Just $ extend (MaybeT . Just) w
   duplicate (MaybeT Nothing) = MaybeT Nothing
 
-{-
-instance ExtendHoist MaybeT where
-  cohoistE (MaybeT m) = MaybeT $ fmap (Identity . extract) m
--}
-  
 maybeT :: a -> (w b -> a) -> MaybeT w b -> a
-maybeT z f = maybe z f . runMaybeT 
+maybeT z f = maybe z f . runMaybeT
 
-nothing :: MaybeT w a 
+nothing :: MaybeT w a
 nothing = MaybeT Nothing
 
-justT :: w a -> MaybeT w a 
+justT :: w a -> MaybeT w a
 justT = MaybeT . Just
 
 instance Apply w => Apply (MaybeT w) where
