@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       2.1.1.1
+version:       2.1.1.2
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -8,11 +8,12 @@ author:        Edward A. Kmett
 maintainer:    Edward A. Kmett <ekmett@gmail.com>
 stability:     provisional
 homepage:      http://github.com/ekmett/comonad-transformers/
+bug-reports:   http://github.com/ekmett/comonad-transformers/issues
 copyright:     Copyright (C) 2008-2012 Edward A. Kmett
 synopsis:      Comonad transformers
 description:   Comonad transformers
 build-type:    Simple
-extra-source-files: coq/Store.v CHANGELOG
+extra-source-files: coq/Store.v CHANGELOG .travis.yml
 
 source-repository head
   type: git
