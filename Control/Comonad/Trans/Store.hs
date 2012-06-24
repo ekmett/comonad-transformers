@@ -28,6 +28,7 @@ module Control.Comonad.Trans.Store
   , pos
   , seek, seeks
   , peek, peeks
+  , experiment
   ) where
 
 import Control.Applicative
@@ -72,6 +73,9 @@ data StoreT s w a = StoreT (w (s -> a)) s
 
 runStoreT :: StoreT s w a -> (w (s -> a), s)
 runStoreT (StoreT wf s) = (wf, s)
+
+experiment :: (Comonad w, Functor f) => (s -> f s) -> StoreT s w a -> f a
+experiment f (StoreT wf s) = extract wf <$> f s
 
 instance Functor w => Functor (StoreT s w) where
   fmap f (StoreT wf s) = StoreT (fmap (f .) wf) s
