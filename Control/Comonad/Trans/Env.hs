@@ -1,4 +1,5 @@
-{-# LANGUAGE CPP, FlexibleContexts #-}
+{-# LANGUAGE CPP #-}
+{-# LANGUAGE FlexibleContexts #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.Comonad.Trans.Env
@@ -37,6 +38,7 @@ import Data.Foldable
 import Data.Traversable
 import Data.Functor.Apply
 import Data.Functor.Identity
+import Data.Functor.Extend
 import Data.Semigroup
 
 #ifdef __GLASGOW_HASKELL__
@@ -100,9 +102,10 @@ instance Functor w => Functor (EnvT e w) where
   fmap g (EnvT e wa) = EnvT e (fmap g wa)
 
 instance Extend w => Extend (EnvT e w) where
-  duplicate (EnvT e wa) = EnvT e (extend (EnvT e) wa)
+  duplicated (EnvT e wa) = EnvT e (extended (EnvT e) wa)
 
 instance Comonad w => Comonad (EnvT e w) where
+  duplicate (EnvT e wa) = EnvT e (extend (EnvT e) wa)
   extract (EnvT _ wa) = extract wa
 
 instance ComonadTrans (EnvT e) where
@@ -116,6 +119,9 @@ instance ComonadHoist (EnvT e) where
 
 instance (Semigroup e, Apply w) => Apply (EnvT e w) where
   EnvT ef wf <.> EnvT ea wa = EnvT (ef <> ea) (wf <.> wa)
+
+instance (Semigroup e, ComonadApply w) => ComonadApply (EnvT e w) where
+  EnvT ef wf <@> EnvT ea wa = EnvT (ef <> ea) (wf <@> wa)
 
 instance Foldable w => Foldable (EnvT e w) where
   foldMap f (EnvT _ w) = foldMap f w

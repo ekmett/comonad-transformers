@@ -34,6 +34,7 @@ import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
 import Data.Distributive
 import Data.Functor.Apply
+import Data.Functor.Extend
 import Data.Functor.Identity
 import Data.Semigroup
 import Data.Typeable
@@ -54,26 +55,30 @@ instance Functor w => Functor (TracedT m w) where
 instance Apply w => Apply (TracedT m w) where
   TracedT wf <.> TracedT wa = TracedT (ap <$> wf <.> wa)
 
+instance (ComonadApply w, Monoid m) => ComonadApply (TracedT m w) where
+  TracedT wf <@> TracedT wa = TracedT (ap <$> wf <@> wa)
+
 instance Applicative w => Applicative (TracedT m w) where
   pure = TracedT . pure . const
   TracedT wf <*> TracedT wa = TracedT (ap <$> wf <*> wa)
 
 instance (Extend w, Semigroup m) => Extend (TracedT m w) where
-  extend f = TracedT . extend (\wf m -> f (TracedT (fmap (. (<>) m) wf))) . runTracedT
+  extended f = TracedT . extended (\wf m -> f (TracedT (fmap (. (<>) m) wf))) . runTracedT
 
-instance (Comonad w, Semigroup m, Monoid m) => Comonad (TracedT m w) where
+instance (Comonad w, Monoid m) => Comonad (TracedT m w) where
+  extend f = TracedT . extend (\wf m -> f (TracedT (fmap (. mappend m) wf))) . runTracedT
   extract (TracedT wf) = extract wf mempty
 
-instance (Semigroup m, Monoid m) => ComonadTrans (TracedT m) where
+instance Monoid m => ComonadTrans (TracedT m) where
   lower = fmap ($mempty) . runTracedT
 
-instance (Semigroup m, Monoid m) => ComonadHoist (TracedT m) where
+instance Monoid m => ComonadHoist (TracedT m) where
   cohoist = traced . extract . runTracedT
 
 instance Distributive w => Distributive (TracedT m w) where
   distribute = TracedT . fmap (\tma m -> fmap ($m) tma) . collect runTracedT
 
-trace :: (Comonad w, Monoid m) => m -> TracedT m w a -> a
+trace :: Comonad w => m -> TracedT m w a -> a
 trace m (TracedT wf) = extract wf m
 
 listen :: Functor w => TracedT m w a -> TracedT m w (a, m)

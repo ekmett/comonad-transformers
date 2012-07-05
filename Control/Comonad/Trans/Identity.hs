@@ -7,7 +7,7 @@
 -- Maintainer  :  Edward Kmett <ekmett@gmail.com>
 -- Stability   :  provisional
 -- Portability :  portable
--- 
+--
 ----------------------------------------------------------------------------
 module Control.Comonad.Trans.Identity
   ( IdentityT(..)

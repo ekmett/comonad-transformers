@@ -1,4 +1,7 @@
-{-# LANGUAGE CPP, FlexibleContexts, FlexibleInstances, UndecidableInstances #-}
+{-# LANGUAGE CPP #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.Comonad.Trans.Cofree
@@ -46,7 +49,7 @@ coiter :: Functor f => (a -> f a) -> a -> Cofree f a
 coiter psi a = a :< (coiter psi <$> psi a)
 
 unfold :: Functor f => (b -> (a, f b)) -> b -> Cofree f a
-unfold f c = case f c of 
+unfold f c = case f c of
   (x, d) -> x :< fmap (unfold f) d
 
 instance Distributive f => Distributive (Cofree f) where
@@ -57,10 +60,12 @@ instance Functor f => Functor (Cofree f) where
   b <$ (_ :< as) = b :< fmap (b <$) as
 
 instance Functor f => Extend (Cofree f) where
-  extend f w = f w :< fmap (extend f) (unwrap w)
-  duplicate w = w :< fmap duplicate (unwrap w)
+  extended f w = f w :< fmap (extended f) (unwrap w)
+  duplicated w = w :< fmap duplicated (unwrap w)
 
 instance Functor f => Comonad (Cofree f) where
+  extend f w = f w :< fmap (extend f) (unwrap w)
+  duplicate w = w :< fmap duplicate (unwrap w)
   extract (a :< _) = a
 
 instance ComonadTrans Cofree where
@@ -75,6 +80,11 @@ instance Apply f => Apply (Cofree f) where
   (f :< fs) <.  (_ :< as) = f :< ((<. ) <$> fs <.> as)
   (_ :< fs)  .> (a :< as) = a :< (( .>) <$> fs <.> as)
 
+instance ComonadApply f => ComonadApply (Cofree f) where
+  (f :< fs) <@> (a :< as) = f a :< ((<@>) <$> fs <@> as)
+  (f :< fs) <@  (_ :< as) = f :< ((<@ ) <$> fs <@> as)
+  (_ :< fs)  @> (a :< as) = a :< (( @>) <$> fs <@> as)
+
 instance Applicative f => Applicative (Cofree f) where
   pure a = as where as = a :< pure as
   (f :< fs) <*> (a :< as) = f a :< ((<*>) <$> fs <*> as)
@@ -82,7 +92,7 @@ instance Applicative f => Applicative (Cofree f) where
   (_ :< fs)  *> (a :< as) = a :< (( *>) <$> fs <*> as)
 
 instance (Show (f (Cofree f a)), Show a) => Show (Cofree f a) where
-  showsPrec d (a :< as) = showParen (d > 5) $ 
+  showsPrec d (a :< as) = showParen (d > 5) $
     showsPrec 6 a . showString " :< " . showsPrec 5 as
 
 instance (Read (f (Cofree f a)), Read a) => Read (Cofree f a) where
@@ -125,9 +135,9 @@ instance (Typeable1 f, Typeable a) => Typeable (Cofree f a) where
 
 cofreeTyCon :: TyCon
 #if __GLASGOW_HASKELL < 704
-cofreeTyCon = mkTyCon "Control.Comonad.Cofree.Cofree"
+cofreeTyCon = mkTyCon "Control.Comonad.Trans.Cofree.Cofree"
 #else
-cofreeTyCon = mkTyCon3 "comonad-transformers" "Control.Comonad.Cofree" "Cofree"
+cofreeTyCon = mkTyCon3 "comonad-transformers" "Control.Comonad.Trans.Cofree" "Cofree"
 #endif
 {-# NOINLINE cofreeTyCon #-}
 
@@ -149,6 +159,6 @@ cofreeConstr = mkConstr cofreeDataType ":<" [] Infix
 {-# NOINLINE cofreeConstr #-}
 
 cofreeDataType :: DataType
-cofreeDataType = mkDataType "Control.Comonad.Cofree.Cofree" [cofreeConstr]
+cofreeDataType = mkDataType "Control.Comonad.Trans.Cofree.Cofree" [cofreeConstr]
 {-# NOINLINE cofreeDataType #-}
 #endif

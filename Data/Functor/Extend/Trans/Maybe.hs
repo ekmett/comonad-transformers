@@ -22,8 +22,8 @@ instance Functor w => Functor (MaybeT w) where
   fmap f = MaybeT . fmap (fmap f) . runMaybeT
 
 instance Extend w => Extend (MaybeT w) where
-  duplicate (MaybeT (Just w)) = MaybeT $ Just $ extend (MaybeT . Just) w
-  duplicate (MaybeT Nothing) = MaybeT Nothing
+  duplicated (MaybeT (Just w)) = MaybeT $ Just $ extended (MaybeT . Just) w
+  duplicated (MaybeT Nothing) = MaybeT Nothing
 
 maybeT :: a -> (w b -> a) -> MaybeT w b -> a
 maybeT z f = maybe z f . runMaybeT

@@ -17,6 +17,7 @@ module Data.Functor.Coproduct
 
 import Control.Comonad
 import Data.Functor.Contravariant
+import Data.Functor.Extend
 import Data.Foldable
 import Data.Traversable
 import Data.Semigroup.Foldable
@@ -53,11 +54,14 @@ instance (Traversable1 f, Traversable1 g) => Traversable1 (Coproduct f g) where
     (fmap (Coproduct . Right) . traverse1 f)
 
 instance (Extend f, Extend g) => Extend (Coproduct f g) where
+  extended f = Coproduct . coproduct
+    (Left . extended (f . Coproduct . Left))
+    (Right . extended (f . Coproduct . Right))
+
+instance (Comonad f, Comonad g) => Comonad (Coproduct f g) where
   extend f = Coproduct . coproduct
     (Left . extend (f . Coproduct . Left))
     (Right . extend (f . Coproduct . Right))
-
-instance (Comonad f, Comonad g) => Comonad (Coproduct f g) where
   extract = coproduct extract extract
 
 instance (Contravariant f, Contravariant g) => Contravariant (Coproduct f g) where

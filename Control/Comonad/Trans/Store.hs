@@ -37,6 +37,7 @@ import Control.Comonad.Hoist.Class
 import Control.Comonad.Trans.Class
 import Data.Functor.Identity
 import Data.Functor.Apply
+import Data.Functor.Extend
 import Data.Semigroup
 
 #ifdef __GLASGOW_HASKELL__
@@ -83,15 +84,20 @@ instance Functor w => Functor (StoreT s w) where
 instance (Apply w, Semigroup s) => Apply (StoreT s w) where
   StoreT ff m <.> StoreT fa n = StoreT ((<*>) <$> ff <.> fa) (m <> n)
 
-instance (Applicative w, Semigroup s, Monoid s) => Applicative (StoreT s w) where
+instance (ComonadApply w, Semigroup s) => ComonadApply (StoreT s w) where
+  StoreT ff m <@> StoreT fa n = StoreT ((<*>) <$> ff <@> fa) (m <> n)
+
+instance (Applicative w, Monoid s) => Applicative (StoreT s w) where
   pure a = StoreT (pure (const a)) mempty
-  StoreT ff m <*> StoreT fa n = StoreT ((<*>) <$> ff <*> fa) (m `mappend` n)
+  StoreT ff m <*> StoreT fa n = StoreT ((<*>) <$> ff <*> fa) (mappend m n)
 
 instance Extend w => Extend (StoreT s w) where
-  duplicate (StoreT wf s) = StoreT (extend StoreT wf) s
-  extend f (StoreT wf s) = StoreT (extend (\wf' s' -> f (StoreT wf' s')) wf) s
+  duplicated (StoreT wf s) = StoreT (extended StoreT wf) s
+  extended f (StoreT wf s) = StoreT (extended (\wf' s' -> f (StoreT wf' s')) wf) s
 
 instance Comonad w => Comonad (StoreT s w) where
+  duplicate (StoreT wf s) = StoreT (extend StoreT wf) s
+  extend f (StoreT wf s) = StoreT (extend (\wf' s' -> f (StoreT wf' s')) wf) s
   extract (StoreT wf s) = extract wf s
 
 instance ComonadTrans (StoreT s) where
