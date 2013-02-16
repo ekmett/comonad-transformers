@@ -8,7 +8,11 @@
 -- Stability   :  provisional
 -- Portability :  portable
 --
--- The trace comonad transformer (aka the cowriter or exponential comonad transformer).
+-- The trace comonad builds up a result by prepending monoidal values to each
+-- other.
+--
+-- This module specifies the traced comonad transformer (aka the cowriter or
+-- exponential comonad transformer).
 --
 ----------------------------------------------------------------------------
 module Control.Comonad.Trans.Traced
@@ -63,20 +67,20 @@ instance Applicative w => Applicative (TracedT m w) where
   TracedT wf <*> TracedT wa = TracedT (ap <$> wf <*> wa)
 
 instance (Extend w, Semigroup m) => Extend (TracedT m w) where
-  extended f = TracedT . extended (\wf m -> f (TracedT (fmap (. (<>) m) wf))) . runTracedT
+  extended f = TracedT . extended (\wf m -> f (TracedT (fmap (. mappend m) wf))) . runTracedT
 
 instance (Comonad w, Monoid m) => Comonad (TracedT m w) where
   extend f = TracedT . extend (\wf m -> f (TracedT (fmap (. mappend m) wf))) . runTracedT
   extract (TracedT wf) = extract wf mempty
 
 instance Monoid m => ComonadTrans (TracedT m) where
-  lower = fmap ($mempty) . runTracedT
+  lower = fmap ($ mempty) . runTracedT
 
 instance Monoid m => ComonadHoist (TracedT m) where
   cohoist = traced . extract . runTracedT
 
 instance Distributive w => Distributive (TracedT m w) where
-  distribute = TracedT . fmap (\tma m -> fmap ($m) tma) . collect runTracedT
+  distribute = TracedT . fmap (\tma m -> fmap ($ m) tma) . collect runTracedT
 
 trace :: Comonad w => m -> TracedT m w a -> a
 trace m (TracedT wf) = extract wf m

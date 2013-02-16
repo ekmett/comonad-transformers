@@ -10,10 +10,33 @@
 -- Stability   :  provisional
 -- Portability :  portable
 --
--- The environment comonad transformer (aka coreader).
--- This adds an extra value that can be accessed in the environment.
+-- The environment comonad holds a value along with some retrievable context.
 --
--- Left adjoint to the reader comonad.
+-- This module specifies the environment comonad transformer (aka coreader),
+-- which is left adjoint to the reader comonad.
+--
+-- The following sets up an experiment that retains its initial value in the
+-- background:
+--
+-- >>> let initial = env 0 0
+--
+-- Extract simply retrieves the value:
+--
+-- >>> extract initial
+-- 0
+--
+-- Play around with the value, in our case producing a negative value:
+--
+-- >>> let experiment = fmap (+ 10) initial
+-- >>> extract experiment
+-- 10
+--
+-- Oh noes, something went wrong, 10 isn't very negative! Better restore the
+-- initial value using the default:
+--
+-- >>> let initialRestored = experiment =>> ask
+-- >>> extract initialRestored
+-- 0
 ----------------------------------------------------------------------------
 module Control.Comonad.Trans.Env
   (
@@ -89,6 +112,8 @@ envTDataType = mkDataType "Control.Comonad.Trans.Env.EnvT" [envTConstr]
 type Env e = EnvT e Identity
 data EnvT e w a = EnvT e (w a)
 
+
+-- | Create an Env using an environment and a value
 env :: e -> a -> Env e a
 env e a = EnvT e (Identity a)
 
@@ -111,6 +136,8 @@ instance Comonad w => Comonad (EnvT e w) where
 instance ComonadTrans (EnvT e) where
   lower (EnvT _ wa) = wa
 
+-- | Gets rid of the environment. This differs from 'extract' in that it will
+--   not continue extracting the value from the contained comonad.
 lowerEnvT :: EnvT e w a -> w a
 lowerEnvT (EnvT _ wa) = wa
 
@@ -129,12 +156,16 @@ instance Foldable w => Foldable (EnvT e w) where
 instance Traversable w => Traversable (EnvT e w) where
   traverse f (EnvT e w) = EnvT e <$> traverse f w
 
+-- | Retrieves the environment.
 ask :: EnvT e w a -> e
 ask (EnvT e _) = e
 
+-- | Like 'ask', but modifies the resulting value with a function.
+--
+--   > asks = f . ask
 asks :: (e -> f) -> EnvT e w a -> f
 asks f (EnvT e _) = f e
 
-local :: (e -> e) -> EnvT e w a -> EnvT e w a
+-- | Modifies the environment using the specified function.
+local :: (e -> e') -> EnvT e w a -> EnvT e' w a
 local f (EnvT e wa) = EnvT (f e) wa
-
