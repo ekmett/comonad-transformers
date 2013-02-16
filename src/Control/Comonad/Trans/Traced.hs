@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.Comonad.Trans.Traced
@@ -67,7 +68,7 @@ instance Applicative w => Applicative (TracedT m w) where
   TracedT wf <*> TracedT wa = TracedT (ap <$> wf <*> wa)
 
 instance (Extend w, Semigroup m) => Extend (TracedT m w) where
-  extended f = TracedT . extended (\wf m -> f (TracedT (fmap (. mappend m) wf))) . runTracedT
+  extended f = TracedT . extended (\wf m -> f (TracedT (fmap (. (<>) m) wf))) . runTracedT
 
 instance (Comonad w, Monoid m) => Comonad (TracedT m w) where
   extend f = TracedT . extend (\wf m -> f (TracedT (fmap (. mappend m) wf))) . runTracedT
