@@ -1,8 +1,11 @@
 {-# LANGUAGE CPP #-}
+#if __GLASGOW_HASKELL__ >= 707
+{-# LANGUAGE StandaloneDeriving, DeriveDataTypeable #-}
+#endif
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.Comonad.Trans.Store
--- Copyright   :  (C) 2008-2011 Edward Kmett
+-- Copyright   :  (C) 2008-2013 Edward Kmett
 -- License     :  BSD-style (see the file LICENSE)
 --
 -- Maintainer  :  Edward Kmett <ekmett@gmail.com>
@@ -69,6 +72,10 @@ import Data.Semigroup
 
 #ifdef __GLASGOW_HASKELL__
 import Data.Typeable
+
+#if __GLASGOW_HASKELL__ >= 707
+deriving instance Typeable StoreT
+#else
 instance (Typeable s, Typeable1 w) => Typeable1 (StoreT s w) where
   typeOf1 dswa = mkTyConApp storeTTyCon [typeOf (s dswa), typeOf1 (w dswa)]
     where
@@ -87,6 +94,8 @@ storeTTyCon = mkTyCon "Control.Comonad.Trans.Store.StoreT"
 storeTTyCon = mkTyCon3 "comonad-transformers" "Control.Comonad.Trans.Store" "StoreT"
 #endif
 {-# NOINLINE storeTTyCon #-}
+#endif
+
 #endif
 
 type Store s = StoreT s Identity

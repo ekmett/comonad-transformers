@@ -1,9 +1,12 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE FlexibleContexts #-}
+#if __GLASGOW_HASKELL__ >= 707
+{-# LANGUAGE StandaloneDeriving, DeriveDataTypeable #-}
+#endif
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.Comonad.Trans.Env
--- Copyright   :  (C) 2008-2011 Edward Kmett
+-- Copyright   :  (C) 2008-2013 Edward Kmett
 -- License     :  BSD-style (see the file LICENSE)
 --
 -- Maintainer  :  Edward Kmett <ekmett@gmail.com>
@@ -65,8 +68,14 @@ import Data.Functor.Extend
 import Data.Semigroup
 
 #ifdef __GLASGOW_HASKELL__
+#if __GLASGOW_HASKELL__ >= 707
+#define Typeable1 Typeable
+#endif
 import Data.Data
 
+#if __GLASGOW_HASKELL__ >= 707
+deriving instance Typeable EnvT
+#else
 instance (Typeable s, Typeable1 w) => Typeable1 (EnvT s w) where
   typeOf1 dswa = mkTyConApp envTTyCon [typeOf (s dswa), typeOf1 (w dswa)]
     where
@@ -74,6 +83,7 @@ instance (Typeable s, Typeable1 w) => Typeable1 (EnvT s w) where
       s = undefined
       w :: EnvT s w a -> w a
       w = undefined
+#endif
 
 envTTyCon :: TyCon
 #if __GLASGOW_HASKELL__ < 704
@@ -83,8 +93,10 @@ envTTyCon = mkTyCon3 "comonad-transformers" "Control.Comonad.Trans.Env" "EnvT"
 #endif
 {-# NOINLINE envTTyCon #-}
 
+#if __GLASGOW_HASKELL__ < 707
 instance (Typeable s, Typeable1 w, Typeable a) => Typeable (EnvT s w a) where
   typeOf = typeOfDefault
+#endif
 
 instance
   ( Data e
