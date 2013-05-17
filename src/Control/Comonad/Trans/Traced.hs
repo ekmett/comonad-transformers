@@ -1,8 +1,11 @@
 {-# LANGUAGE CPP #-}
+#if __GLASGOW_HASKELL__ >= 707
+{-# LANGUAGE StandaloneDeriving, DeriveDataTypeable #-}
+#endif
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Control.Comonad.Trans.Traced
--- Copyright   :  (C) 2008-2011 Edward Kmett
+-- Copyright   :  (C) 2008-2013 Edward Kmett
 -- License     :  BSD-style (see the file LICENSE)
 --
 -- Maintainer  :  Edward Kmett <ekmett@gmail.com>
@@ -97,6 +100,9 @@ censor g = TracedT . fmap (. g) . runTracedT
 
 #ifdef __GLASGOW_HASKELL__
 
+#if __GLASGOW_HASKELL__ >= 707
+deriving instance Typeable TracedT
+#else
 instance (Typeable s, Typeable1 w) => Typeable1 (TracedT s w) where
   typeOf1 dswa = mkTyConApp tracedTTyCon [typeOf (s dswa), typeOf1 (w dswa)]
     where
@@ -112,5 +118,7 @@ tracedTTyCon = mkTyCon "Control.Comonad.Trans.Traced.TracedT"
 tracedTTyCon = mkTyCon3 "comonad-transformers" "Control.Comonad.Trans.Traced" "TracedT"
 #endif
 {-# NOINLINE tracedTTyCon #-}
+
+#endif
 
 #endif
