@@ -29,8 +29,10 @@
 --
 -- Add something to the focus:
 --
--- > addToFocus :: Int -> Store (Int, Int) Int
+-- > addToFocus :: Int -> Store (Int, Int) Int -> Int
 -- > addToFocus x wa = x + extract wa
+-- >
+-- > added3 :: Store (Int, Int) Int
 -- > added3 = extend (addToFocus 3) storeTuple
 --
 -- The focus of added3 is now @1 + 3 = 4@. However, this action changed only
