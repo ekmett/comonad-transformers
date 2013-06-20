@@ -1,3 +1,7 @@
+3.0.3
+-----
+* Marked modules Trustworthy as needed.
+
 3.0.1
 -----
 * Removed upper bounds on my other dependencies
