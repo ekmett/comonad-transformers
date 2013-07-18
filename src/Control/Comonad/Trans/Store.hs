@@ -161,7 +161,7 @@ pos (StoreT _ s) = s
 -- Seek satisfies the law
 --
 -- > seek s = peek s . duplicate
-seek :: Comonad w => s -> StoreT s w a -> StoreT s w a
+seek :: s -> StoreT s w a -> StoreT s w a
 seek s ~(StoreT f _) = StoreT f s
 
 -- | Modify the stored value
@@ -172,7 +172,7 @@ seek s ~(StoreT f _) = StoreT f s
 -- Seeks satisfies the law
 --
 -- > seeks f = peeks f . duplicate
-seeks :: Comonad w => (s -> s) -> StoreT s w a -> StoreT s w a
+seeks :: (s -> s) -> StoreT s w a -> StoreT s w a
 seeks f ~(StoreT g s) = StoreT g (f s)
 
 -- | Peek at what the current focus would be for a different stored value

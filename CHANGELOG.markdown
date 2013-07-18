@@ -1,3 +1,7 @@
+3.0.4
+-----
+* Removed unnecessary constraints in `Control.Comonad.Trans.Store`.
+
 3.0.3
 -----
 * Marked modules Trustworthy as needed.
