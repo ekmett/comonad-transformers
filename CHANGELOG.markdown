@@ -1,3 +1,7 @@
+3.1
+---
+* More instances for `Coproduct`
+
 3.0.4
 -----
 * Removed unnecessary constraints in `Control.Comonad.Trans.Store`.
