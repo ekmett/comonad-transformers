@@ -28,6 +28,7 @@ import Data.Semigroup.Foldable
 import Data.Semigroup.Traversable
 
 newtype Coproduct f g a = Coproduct { getCoproduct :: Either (f a) (g a) }
+  deriving (Eq, Ord, Read, Show)
 
 left :: f a -> Coproduct f g a
 left = Coproduct . Left
