@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       3.2
+version:       4.0
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -10,8 +10,8 @@ stability:     provisional
 homepage:      http://github.com/ekmett/comonad-transformers/
 bug-reports:   http://github.com/ekmett/comonad-transformers/issues
 copyright:     Copyright (C) 2008-2013 Edward A. Kmett
-synopsis:      This package has been merged into comonad 3.2
-description:   This package has been merged into comonad 3.2
+synopsis:      This package has been merged into comonad 4.0
+description:   This package has been merged into comonad 4.0
 build-type:    Simple
 extra-source-files:
   README.markdown
@@ -25,4 +25,4 @@ source-repository head
   location: git://github.com/ekmett/comonad-transformers.git
 
 library
-  build-depends: base >= 4 && < 5, comonad >= 3.2
+  build-depends: base >= 4 && < 5, comonad >= 4

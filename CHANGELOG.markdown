@@ -1,6 +1,6 @@
-3.2
+4.0
 ---
-* This package has been merged into `comonad` 3.2
+* This package has been merged into `comonad` 4.0
 
 3.1
 ---
