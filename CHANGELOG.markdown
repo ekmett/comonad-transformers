@@ -1,3 +1,7 @@
+3.2
+---
+* This package has been merged into `comonad` 3.2
+
 3.1
 ---
 * More instances for `Coproduct`

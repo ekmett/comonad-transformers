@@ -1,6 +1,6 @@
 name:          comonad-transformers
 category:      Control, Comonads
-version:       3.1
+version:       3.2
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -9,13 +9,11 @@ maintainer:    Edward A. Kmett <ekmett@gmail.com>
 stability:     provisional
 homepage:      http://github.com/ekmett/comonad-transformers/
 bug-reports:   http://github.com/ekmett/comonad-transformers/issues
-copyright:     Copyright (C) 2008-2012 Edward A. Kmett
-synopsis:      Comonad transformers
-description:   Comonad transformers
+copyright:     Copyright (C) 2008-2013 Edward A. Kmett
+synopsis:      This package has been merged into comonad 3.2
+description:   This package has been merged into comonad 3.2
 build-type:    Simple
 extra-source-files:
-  coq/Store.v
-  CHANGELOG.markdown
   README.markdown
   .travis.yml
   .ghci
@@ -27,27 +25,4 @@ source-repository head
   location: git://github.com/ekmett/comonad-transformers.git
 
 library
-  build-depends:
-    base          >= 4       && < 5,
-    comonad       >= 3.0,
-    containers    >= 0.3     && < 0.6,
-    contravariant >= 0.2.0.1,
-    distributive  >= 0.2.2,
-    semigroupoids >= 3.0,
-    semigroups    >= 0.8.3.1,
-    transformers  >= 0.2     && < 0.4
-
-  extensions: CPP
-
-  exposed-modules:
-    Control.Comonad.Hoist.Class
-    Control.Comonad.Trans.Class
-    Control.Comonad.Trans.Env
-    Control.Comonad.Trans.Identity
-    Control.Comonad.Trans.Store
-    Control.Comonad.Trans.Traced
-    Data.Functor.Coproduct
-    Data.Functor.Composition
-
-  ghc-options: -Wall
-  hs-source-dirs: src
+  build-depends: base >= 4 && < 5, comonad >= 3.2
